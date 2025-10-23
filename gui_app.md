@@ -5,6 +5,9 @@
 
 Сначала установим компилятор и библиотеки GTK+ 4:
 
+В случае проблем с отладкой, можно заменить на версию GTK+ 4 здесь и далее в файлах сборки и компиляции.
+
+
 ```bash
 sudo apt update
 sudo apt install g++ pkg-config libgtk-4-dev build-essential
