@@ -523,5 +523,15 @@ def analyze_gradient_flow():
 
 **Примечание:** Для запуска визуализаций может потребоваться установка matplotlib:
 ```bash
-pip install matplotlib
+# Установка всех необходимых зависимостей
+!pip install torch numpy matplotlib
+
+# Проверка установки
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+
+print(f"PyTorch version: {torch.__version__}")
+print(f"NumPy version: {np.__version__}")
+print("Все зависимости успешно установлены!")
 ```
