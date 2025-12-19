@@ -535,3 +535,126 @@ print(f"PyTorch version: {torch.__version__}")
 print(f"NumPy version: {np.__version__}")
 print("Все зависимости успешно установлены!")
 ```
+```python
+import numpy as np
+
+# СУПЕР-ПРОСТАЯ модель: y = w*x + b
+# x = 2.0, y_true = 3.0
+
+# Инициализация
+w = 1.5  # вес
+b = 0.5  # смещение
+x = 2.0  # вход
+y_true = 3.0  # правильный ответ
+
+print("=== СУПЕР-ПРОСТОЙ ПРИМЕР ===")
+print(f"Модель: y_pred = w*x + b")
+print(f"Параметры: w = {w}, b = {b}")
+print(f"Вход: x = {x}, Правильный ответ: y_true = {y_true}")
+print()
+
+# 1. Прямой проход
+y_pred = w * x + b
+print(f"1. Прямой проход:")
+print(f"   y_pred = {w} * {x} + {b} = {y_pred}")
+print()
+
+# 2. Вычисляем ошибку (MSE)
+loss = (y_pred - y_true) ** 2
+print(f"2. Вычисляем потери (MSE):")
+print(f"   L = (y_pred - y_true)² = ({y_pred} - {y_true})² = {loss}")
+print()
+
+# 3. РУЧНОЕ вычисление градиентов
+print(f"3. Ручное вычисление градиентов:")
+print(f"   L = (y_pred - y_true)²")
+print(f"   y_pred = w*x + b")
+
+# 3.1 Градиент по y_pred
+dL_dy_pred = 2 * (y_pred - y_true)
+print(f"\n3.1 Градиент по предсказанию (dL/dy_pred):")
+print(f"   dL/dy_pred = 2 * (y_pred - y_true)")
+print(f"              = 2 * ({y_pred} - {y_true})")
+print(f"              = {dL_dy_pred}")
+
+# 3.2 Градиент по w (цепное правило)
+# dL/dw = dL/dy_pred * dy_pred/dw
+# dy_pred/dw = x
+dL_dw = dL_dy_pred * x
+print(f"\n3.2 Градиент по весу w (dL/dw):")
+print(f"   dL/dw = dL/dy_pred * dy_pred/dw")
+print(f"         = dL/dy_pred * x")
+print(f"         = {dL_dy_pred} * {x}")
+print(f"         = {dL_dw}")
+
+# 3.3 Градиент по b
+# dL/db = dL/dy_pred * dy_pred/db
+# dy_pred/db = 1
+dL_db = dL_dy_pred * 1
+print(f"\n3.3 Градиент по смещению b (dL/db):")
+print(f"   dL/db = dL/dy_pred * dy_pred/db")
+print(f"         = dL/dy_pred * 1")
+print(f"         = {dL_dy_pred}")
+print()
+
+# 4. Обновление параметров
+learning_rate = 0.1
+print(f"4. Обновление параметров (learning_rate = {learning_rate}):")
+
+w_new = w - learning_rate * dL_dw
+b_new = b - learning_rate * dL_db
+
+print(f"   w_new = w - lr * dL/dw = {w} - {learning_rate} * {dL_dw} = {w_new}")
+print(f"   b_new = b - lr * dL/db = {b} - {learning_rate} * {dL_db} = {b_new}")
+print()
+
+# 5. Проверка
+print(f"5. Проверка:")
+y_pred_new = w_new * x + b_new
+loss_new = (y_pred_new - y_true) ** 2
+
+print(f"   Старое предсказание: {y_pred}")
+print(f"   Новое предсказание: {y_pred_new}")
+print(f"   Старые потери: {loss}")
+print(f"   Новые потери: {loss_new}")
+print(f"   Улучшение: {loss - loss_new}")
+```
+
+```python
+import numpy as np
+
+# САМАЯ ПРОСТАЯ ВЕРСИЯ
+print("=== САМЫЙ ПРОСТОЙ ОБРАТНЫЙ ПРОХОД ===\n")
+
+# Параметры
+w, b = 1.5, 0.5
+x, y_true = 2.0, 3.0
+lr = 0.1
+
+# ШАГ 1: Прямой проход
+y_pred = w * x + b
+loss = (y_pred - y_true) ** 2
+print(f"ДО обучения: y_pred = {y_pred:.2f}, loss = {loss:.4f}")
+
+# ШАГ 2: Обратный проход (ВСЕГДА ТАК!)
+# 1. Градиент по y_pred
+dloss_dy_pred = 2 * (y_pred - y_true)  # производная (y-y_true)²
+
+# 2. Градиенты по параметрам
+dloss_dw = dloss_dy_pred * x  # цепное правило: dy_pred/dw = x
+dloss_db = dloss_dy_pred * 1  # цепное правило: dy_pred/db = 1
+
+# ШАГ 3: Обновление параметров
+w = w - lr * dloss_dw
+b = b - lr * dloss_db
+
+# ШАГ 4: Проверка
+y_pred_new = w * x + b
+loss_new = (y_pred_new - y_true) ** 2
+print(f"ПОСЛЕ обучения: y_pred = {y_pred_new:.2f}, loss = {loss_new:.4f}")
+print(f"Улучшение: {loss - loss_new:.4f}")
+
+print("\nГРАДИЕНТЫ БЫЛИ:")
+print(f"dloss/dw = {dloss_dw}")
+print(f"dloss/db = {dloss_db}")
+```
