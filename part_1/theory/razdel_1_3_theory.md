@@ -539,7 +539,7 @@ for(int i = 2; i * i <= n; i++) {
 
 ---
 
-## 📚 Часть 1: Теория (15 минут)
+## 📚 Часть 1: Теория 
 
 ### 1. Цикл `for` - когда знаем количество повторений
 ```cpp
@@ -574,9 +574,1082 @@ do {
 
 ---
 
-## 🔥 Часть 2: Практические задачи (60 минут)
+# **Глубокий разбор циклов в C++: for, while, do-while, break, continue**
 
-### 🟢 Уровень 1: Начальный (15 минут)
+## **🎯 Фундаментальные концепции: Зачем нужны циклы?**
+
+Циклы — это механизм **повторного выполнения** блока кода. В реальном программировании:
+- 90% задач требуют обработки коллекций данных
+- 80% времени выполнения программы приходится на циклы
+- Циклы — основа алгоритмического мышления
+
+**Базовое представление процессора:**
+```assembly
+; Ассемблерный эквивалент цикла
+mov ecx, 10       ; счетчик = 10
+loop_start:
+    ; тело цикла
+    dec ecx        ; счетчик--
+    jnz loop_start ; если не ноль, вернуться к началу
+```
+
+---
+
+## **1. ЦИКЛ FOR: Детальный анализ**
+
+### **Каноническая форма:**
+```cpp
+for (инициализация; условие; инкремент) {
+    тело_цикла;
+}
+```
+
+### **Диаграмма выполнения:**
+```mermaid
+graph TD
+    A[Начало for] --> B[Инициализация];
+    B --> C{Условие истинно?};
+    C -- Нет --> Z[Выход из цикла];
+    C -- Да --> D[Тело цикла];
+    D --> E[Инкремент];
+    E --> C;
+```
+
+### **Полный разбор семантики:**
+```cpp
+// ==============================================
+// Файл: 01_for_loop_detailed.cpp
+// Детальный анализ цикла for
+// ==============================================
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    cout << "=== ГЛУБОКИЙ АНАЛИЗ ЦИКЛА FOR ===\n" << endl;
+    
+    // Пример 1: Классический for
+    cout << "1. Классический for (C-style):" << endl;
+    for (int i = 0; i < 5; i++) {  // i существует только в цикле
+        cout << "i = " << i << endl;
+    }
+    // i здесь уже не существует
+    
+    // Что происходит на каждом шаге:
+    // 1. int i = 0;     // Инициализация (1 раз)
+    // 2. i < 5          // Проверка условия (перед каждой итерацией)
+    // 3. cout << ...    // Тело цикла
+    // 4. i++            // Инкремент (после каждой итерации)
+    // 5. Вернуться к шагу 2
+    
+    // Пример 2: Несколько переменных в инициализации
+    cout << "\n2. Несколько переменных:" << endl;
+    for (int i = 0, j = 10; i < 5 && j > 5; i++, j--) {
+        cout << "i = " << i << ", j = " << j << endl;
+    }
+    
+    // Пример 3: Отсутствие частей
+    cout << "\n3. Вариации синтаксиса:" << endl;
+    
+    // Без инициализации (переменная объявлена ранее)
+    int k = 0;
+    for (; k < 3; k++) {
+        cout << "k = " << k << endl;
+    }
+    
+    // Без инкремента в заголовке
+    for (int m = 0; m < 3; ) {
+        cout << "m = " << m << endl;
+        m++;  // Инкремент в теле
+    }
+    
+    // Бесконечный цикл (все части опущены)
+    // for (;;) { /* бесконечный цикл */ }
+    
+    // Пример 4: Нестандартный инкремент
+    cout << "\n4. Различные виды инкремента:" << endl;
+    
+    // Обратный счет
+    for (int i = 5; i > 0; i--) {
+        cout << i << " ";
+    }
+    cout << endl;
+    
+    // Шаг 2
+    for (int i = 0; i < 10; i += 2) {
+        cout << i << " ";
+    }
+    cout << endl;
+    
+    // Умножение
+    for (int i = 1; i <= 16; i *= 2) {
+        cout << i << " ";
+    }
+    cout << endl;
+    
+    // Пример 5: For с пользовательскими типами
+    cout << "\n5. Пользовательские типы:" << endl;
+    
+    class Counter {
+        int value;
+    public:
+        Counter(int v) : value(v) {}
+        bool operator<(int limit) const { return value < limit; }
+        Counter& operator++() { value++; return *this; }
+        int get() const { return value; }
+    };
+    
+    for (Counter c(0); c < 5; ++c) {
+        cout << "Counter = " << c.get() << endl;
+    }
+    
+    // Пример 6: Область видимости
+    cout << "\n6. Область видимости переменных цикла:" << endl;
+    
+    // C++98: переменная видна после цикла
+    int old_i;
+    for (old_i = 0; old_i < 3; old_i++) {}
+    cout << "old_i после цикла: " << old_i << endl;
+    
+    // C++11: переменная НЕ видна после цикла
+    for (int new_i = 0; new_i < 3; new_i++) {}
+    // cout << new_i;  // Ошибка: new_i не существует
+    
+    // Пример 7: Вложенные циклы
+    cout << "\n7. Вложенные циклы (таблица умножения):" << endl;
+    for (int i = 1; i <= 3; i++) {
+        for (int j = 1; j <= 3; j++) {
+            cout << i << " × " << j << " = " << i * j << "\t";
+        }
+        cout << endl;
+    }
+    
+    return 0;
+}
+```
+
+### **Оптимизация цикла for компилятором:**
+```cpp
+// Исходный код:
+for (int i = 0; i < 1000; i++) {
+    array[i] = i * 2;
+}
+
+// Оптимизированный ассемблерный код (пример):
+mov ecx, 0           ; i = 0
+lea rdx, [array]     ; адрес массива
+loop_start:
+mov [rdx + rcx*4], ecx  ; array[i] = i
+add ecx, 2            ; i += 1 (с учётом *2)
+cmp ecx, 2000         ; сравнение с 1000*2
+jl loop_start
+```
+
+---
+
+## **2. RANGE-BASED FOR (C++11): Современный подход**
+
+### **Синтаксис и семантика:**
+```cpp
+for (тип элемент : контейнер) {
+    // работа с элементом
+}
+```
+
+### **Детальный разбор:**
+```cpp
+// ==============================================
+// Файл: 02_range_based_for.cpp
+// Range-based for (C++11 и выше)
+// ==============================================
+
+#include <iostream>
+#include <vector>
+#include <array>
+#include <list>
+#include <map>
+#include <string>
+using namespace std;
+
+int main() {
+    cout << "=== RANGE-BASED FOR (C++11+) ===\n" << endl;
+    
+    // Пример 1: Массив
+    cout << "1. Массивы:" << endl;
+    int arr[] = {1, 2, 3, 4, 5};
+    
+    // Копирование элементов (по значению)
+    for (int x : arr) {  // x - копия элемента
+        cout << x << " ";
+        x = 0;  // Не влияет на исходный массив!
+    }
+    cout << "\nИсходный массив: ";
+    for (int x : arr) cout << x << " ";
+    cout << endl;
+    
+    // Ссылка (изменяет оригинал)
+    for (int& x : arr) {
+        x *= 2;  // Удваиваем каждый элемент
+    }
+    cout << "После удвоения: ";
+    for (int x : arr) cout << x << " ";
+    cout << endl;
+    
+    // Константная ссылка (только чтение)
+    for (const int& x : arr) {
+        cout << x << " ";  // Можно только читать
+        // x = 0;  // Ошибка компиляции
+    }
+    cout << endl;
+    
+    // Пример 2: STL контейнеры
+    cout << "\n2. STL контейнеры:" << endl;
+    vector<string> words = {"apple", "banana", "cherry"};
+    
+    for (const string& word : words) {
+        cout << word << " ";
+    }
+    cout << endl;
+    
+    // Пример 3: Автоматическое определение типа
+    cout << "\n3. Auto type deduction:" << endl;
+    
+    for (auto& word : words) {  // auto = string
+        word += "!";  // Добавляем восклицательный знак
+    }
+    
+    for (const auto& word : words) {
+        cout << word << " ";
+    }
+    cout << endl;
+    
+    // Пример 4: Пользовательские контейнеры
+    cout << "\n4. Пользовательские типы:" << endl;
+    
+    class SimpleContainer {
+        int data[5] = {10, 20, 30, 40, 50};
+    public:
+        // Для range-based for нужны begin() и end()
+        int* begin() { return data; }
+        int* end() { return data + 5; }
+        const int* begin() const { return data; }
+        const int* end() const { return data + 5; }
+    };
+    
+    SimpleContainer container;
+    for (int val : container) {
+        cout << val << " ";
+    }
+    cout << endl;
+    
+    // Пример 5: Initializer list
+    cout << "\n5. Initializer lists:" << endl;
+    for (int x : {1, 1, 2, 3, 5, 8}) {  // Фибоначчи
+        cout << x << " ";
+    }
+    cout << endl;
+    
+    // Пример 6: Range-based for с map
+    cout << "\n6. Ассоциативные контейнеры:" << endl;
+    map<int, string> id_to_name = {
+        {1, "Alice"},
+        {2, "Bob"},
+        {3, "Charlie"}
+    };
+    
+    // Элементы map - пары (key, value)
+    for (const auto& pair : id_to_name) {
+        cout << "ID: " << pair.first 
+             << ", Name: " << pair.second << endl;
+    }
+    
+    // C++17: Structured bindings
+    cout << "\n7. Structured bindings (C++17):" << endl;
+    for (const auto& [id, name] : id_to_name) {
+        cout << "ID: " << id << ", Name: " << name << endl;
+    }
+    
+    // Пример 7: Вложенные range-based for
+    cout << "\n8. Вложенные циклы:" << endl;
+    vector<vector<int>> matrix = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+    
+    for (const auto& row : matrix) {
+        for (int val : row) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+    
+    return 0;
+}
+```
+
+### **Как компилятор преобразует range-based for:**
+```cpp
+// Исходный код:
+for (auto& x : container) {
+    x.process();
+}
+
+// Преобразуется компилятором в:
+{
+    auto&& __range = container;
+    auto __begin = begin(__range);
+    auto __end = end(__range);
+    for (; __begin != __end; ++__begin) {
+        auto& x = *__begin;
+        x.process();
+    }
+}
+```
+
+---
+
+## **3. ЦИКЛ WHILE: Детальный анализ**
+
+### **Форма и семантика:**
+```cpp
+while (условие) {
+    тело_цикла;
+}
+```
+
+### **Диаграмма выполнения:**
+```mermaid
+graph TD
+    A[Начало while] --> B{Условие истинно?};
+    B -- Нет --> Z[Выход из цикла];
+    B -- Да --> C[Тело цикла];
+    C --> B;
+```
+
+### **Полный разбор:**
+```cpp
+// ==============================================
+// Файл: 03_while_loop_detailed.cpp
+// Детальный анализ цикла while
+// ==============================================
+
+#include <iostream>
+#include <random>
+#include <ctime>
+#include <cmath>
+using namespace std;
+
+int main() {
+    cout << "=== ГЛУБОКИЙ АНАЛИЗ ЦИКЛА WHILE ===\n" << endl;
+    
+    // Пример 1: Базовый while
+    cout << "1. Базовый while:" << endl;
+    int counter = 0;
+    while (counter < 5) {  // Условие проверяется ПЕРЕД итерацией
+        cout << "counter = " << counter << endl;
+        counter++;  // Инкремент в теле
+    }
+    
+    // Ключевое отличие от for:
+    // for: инициализация, условие, инкремент в заголовке
+    // while: только условие в заголовке
+    
+    // Пример 2: While для обработки ввода
+    cout << "\n2. Обработка пользовательского ввода:" << endl;
+    /*
+    int sum = 0;
+    int value;
+    cout << "Вводите числа (0 для завершения): ";
+    
+    while (cin >> value && value != 0) {
+        sum += value;
+    }
+    cout << "Сумма: " << sum << endl;
+    */
+    
+    // Пример 3: While с сложным условием
+    cout << "\n3. Сложные условия:" << endl;
+    int x = 10;
+    int y = 20;
+    
+    while (x < 15 && y > 15) {
+        cout << "x = " << x << ", y = " << y << endl;
+        x++;
+        y--;
+    }
+    
+    // Пример 4: Бесконечный while
+    cout << "\n4. Бесконечные циклы:" << endl;
+    /*
+    // Вариант 1: явное true
+    while (true) {
+        // Бесконечный цикл
+        // Нужен break для выхода
+    }
+    
+    // Вариант 2: условие всегда истинно
+    int flag = 1;
+    while (flag) {  // flag никогда не становится 0
+        // ...
+    }
+    */
+    
+    // Пример 5: While с инвариантами
+    cout << "\n5. Инварианты цикла:" << endl;
+    // Инвариант - условие, которое истинно перед каждой итерацией
+    
+    int n = 10;
+    int factorial = 1;
+    int i = 1;
+    
+    // Инвариант: factorial = (i-1)!
+    while (i <= n) {
+        factorial *= i;  // Теперь factorial = i!
+        i++;             // Теперь factorial = (i-1)!
+        // Инвариант восстановлен
+    }
+    cout << n << "! = " << factorial << endl;
+    
+    // Пример 6: While для обработки строк
+    cout << "\n6. Обработка строк:" << endl;
+    string text = "Hello, World!";
+    size_t pos = 0;
+    
+    // Найти все пробелы
+    while ((pos = text.find(' ', pos)) != string::npos) {
+        cout << "Пробел в позиции: " << pos << endl;
+        pos++;  // Ищем с следующей позиции
+    }
+    
+    // Пример 7: Сравнение for и while
+    cout << "\n7. Эквивалентность for и while:" << endl;
+    
+    // Этот for:
+    for (int i = 0; i < 3; i++) {
+        cout << "for: " << i << endl;
+    }
+    
+    // Эквивалентен этому while:
+    {
+        int i = 0;          // Инициализация
+        while (i < 3) {     // Условие
+            cout << "while: " << i << endl;
+            i++;            // Инкремент
+        }
+    }
+    
+    // Правило: любой for можно переписать как while
+    // Обратное не всегда верно
+    
+    // Пример 8: While для симуляции
+    cout << "\n8. Симуляция процессов:" << endl;
+    
+    // Симуляция падения мяча с отскоком
+    double height = 10.0;  // начальная высота
+    const double gravity = 9.81;
+    const double restitution = 0.8;  // упругость
+    const double threshold = 0.01;   // порог остановки
+    
+    int bounces = 0;
+    while (height > threshold) {
+        // Время падения: t = sqrt(2h/g)
+        double time_to_fall = sqrt(2 * height / gravity);
+        
+        cout << "Отскок " << ++bounces 
+             << ": высота = " << height 
+             << " м, время падения = " << time_to_fall << " с" << endl;
+        
+        // Новая высота после отскока
+        height *= restitution * restitution;  // энергия теряется дважды
+    }
+    
+    cout << "Мяч остановился после " << bounces << " отскоков" << endl;
+    
+    return 0;
+}
+```
+
+---
+
+## **4. ЦИКЛ DO-WHILE: Уникальные особенности**
+
+### **Форма и семантика:**
+```cpp
+do {
+    тело_цикла;
+} while (условие);
+```
+
+### **Диаграмма выполнения:**
+```mermaid
+graph TD
+    A[Начало do-while] --> B[Тело цикла];
+    B --> C{Условие истинно?};
+    C -- Да --> B;
+    C -- Нет --> Z[Выход из цикла];
+```
+
+### **Полный разбор:**
+```cpp
+// ==============================================
+// Файл: 04_do_while_detailed.cpp
+// Детальный анализ цикла do-while
+// ==============================================
+
+#include <iostream>
+#include <string>
+#include <random>
+using namespace std;
+
+int main() {
+    cout << "=== ГЛУБОКИЙ АНАЛИЗ ЦИКЛА DO-WHILE ===\n" << endl;
+    
+    // Ключевая особенность: тело выполняется ХОТЯ БЫ ОДИН РАЗ
+    // Условие проверяется ПОСЛЕ итерации
+    
+    // Пример 1: Базовый do-while
+    cout << "1. Базовый do-while:" << endl;
+    int count = 0;
+    
+    do {
+        cout << "Это сообщение выведется хотя бы 1 раз" << endl;
+        count++;
+    } while (count < 3);
+    
+    // Пример 2: Сравнение while и do-while
+    cout << "\n2. Сравнение while и do-while:" << endl;
+    
+    // While: проверка ПЕРЕД выполнением
+    int w = 5;
+    while (w < 5) {
+        cout << "while: это не выполнится" << endl;
+        w++;
+    }
+    
+    // Do-while: проверка ПОСЛЕ выполнения
+    int d = 5;
+    do {
+        cout << "do-while: это выполнится 1 раз" << endl;
+        d++;
+    } while (d < 5);
+    
+    // Пример 3: Меню пользователя
+    cout << "\n3. Меню пользователя (классический пример):" << endl;
+    /*
+    int choice;
+    do {
+        cout << "\n=== МЕНЮ ===" << endl;
+        cout << "1. Опция 1" << endl;
+        cout << "2. Опция 2" << endl;
+        cout << "3. Выход" << endl;
+        cout << "Выберите: ";
+        cin >> choice;
+        
+        switch (choice) {
+            case 1: cout << "Выбрана опция 1"; break;
+            case 2: cout << "Выбрана опция 2"; break;
+            case 3: cout << "Выход..."; break;
+            default: cout << "Неверный выбор"; break;
+        }
+    } while (choice != 3);
+    */
+    
+    // Пример 4: Валидация ввода
+    cout << "\n4. Валидация пользовательского ввода:" << endl;
+    
+    int age;
+    bool valid_input = false;
+    
+    do {
+        cout << "Введите возраст (1-120): ";
+        // if (cin >> age) {
+        //     if (age >= 1 && age <= 120) {
+        //         valid_input = true;
+        //     } else {
+        //         cout << "Возраст должен быть от 1 до 120!" << endl;
+        //     }
+        // } else {
+        //     cout << "Неверный формат!" << endl;
+        //     cin.clear();
+        //     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        // }
+    } while (!valid_input);
+    
+    cout << "Возраст принят: " << age << endl;
+    
+    // Пример 5: Игры и симуляции
+    cout << "\n5. Игровые циклы:" << endl;
+    
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1, 100);
+    
+    int secret_number = dis(gen);
+    int attempts = 0;
+    int guess;
+    bool guessed = false;
+    
+    cout << "Угадайте число от 1 до 100" << endl;
+    
+    do {
+        // cout << "Ваша попытка: ";
+        // cin >> guess;
+        guess = 50;  // для примера
+        
+        attempts++;
+        
+        if (guess < secret_number) {
+            cout << "Слишком маленькое!" << endl;
+        } else if (guess > secret_number) {
+            cout << "Слишком большое!" << endl;
+        } else {
+            guessed = true;
+            cout << "Поздравляю! Вы угадали за " << attempts << " попыток" << endl;
+        }
+    } while (!guessed);
+    
+    // Пример 6: Обработка до первого успеха
+    cout << "\n6. Повтор до успеха:" << endl;
+    
+    int max_attempts = 5;
+    int current_attempt = 0;
+    bool success = false;
+    
+    do {
+        current_attempt++;
+        cout << "Попытка " << current_attempt << " из " << max_attempts << endl;
+        
+        // Имитация операции с 30% шансом успеха
+        // success = (dis(gen) <= 30);
+        success = (current_attempt == 3);  // Успех на 3-й попытке
+        
+        if (success) {
+            cout << "Успех!" << endl;
+        } else if (current_attempt < max_attempts) {
+            cout << "Неудача, пробуем снова..." << endl;
+        } else {
+            cout << "Достигнут лимит попыток" << endl;
+        }
+    } while (!success && current_attempt < max_attempts);
+    
+    // Пример 7: Обработка последовательностей
+    cout << "\n7. Обработка до определенного условия:" << endl;
+    
+    // Чтение чисел до отрицательного
+    vector<int> numbers;
+    int num;
+    
+    cout << "Введите положительные числа (отрицательное для завершения):" << endl;
+    /*
+    do {
+        cin >> num;
+        if (num >= 0) {
+            numbers.push_back(num);
+        }
+    } while (num >= 0);
+    */
+    
+    cout << "Введено " << numbers.size() << " чисел" << endl;
+    
+    return 0;
+}
+```
+
+---
+
+## **5. ОПЕРАТОРЫ BREAK И CONTINUE: Контроль потока**
+
+### **Break - немедленный выход из цикла**
+```cpp
+// ==============================================
+// Файл: 05_break_continue.cpp
+// Детальный анализ break и continue
+// ==============================================
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+int main() {
+    cout << "=== BREAK И CONTINUE: КОНТРОЛЬ ПОТОКА ===\n" << endl;
+    
+    // BREAK: немедленный выход из текущего цикла
+    // CONTINUE: переход к следующей итерации
+    
+    // Пример 1: Break для досрочного выхода
+    cout << "1. Оператор break:" << endl;
+    
+    // Поиск первого отрицательного числа
+    vector<int> numbers = {5, 3, -2, 8, -1, 4};
+    
+    for (int num : numbers) {
+        if (num < 0) {
+            cout << "Найдено первое отрицательное число: " << num << endl;
+            break;  // Выход из цикла
+        }
+        cout << "Проверяем " << num << " (положительное)" << endl;
+    }
+    
+    // Пример 2: Continue для пропуска итерации
+    cout << "\n2. Оператор continue:" << endl;
+    
+    // Сумма только положительных чисел
+    int sum = 0;
+    for (int num : numbers) {
+        if (num < 0) {
+            cout << "Пропускаем отрицательное: " << num << endl;
+            continue;  // Пропустить остаток итерации
+        }
+        sum += num;
+        cout << "Добавляем " << num << ", сумма = " << sum << endl;
+    }
+    cout << "Итоговая сумма положительных: " << sum << endl;
+    
+    // Пример 3: Break во вложенных циклах
+    cout << "\n3. Break во вложенных циклах:" << endl;
+    
+    // Поиск в матрице
+    vector<vector<int>> matrix = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+    
+    int target = 5;
+    bool found = false;
+    
+    for (size_t i = 0; i < matrix.size(); i++) {
+        for (size_t j = 0; j < matrix[i].size(); j++) {
+            if (matrix[i][j] == target) {
+                cout << "Найдено " << target << " на позиции [" 
+                     << i << "][" << j << "]" << endl;
+                found = true;
+                break;  // Выход только из внутреннего цикла!
+            }
+        }
+        if (found) break;  // Выход из внешнего цикла
+    }
+    
+    // Пример 4: Метка для выхода из вложенных циклов
+    cout << "\n4. Метки (не в C++, но в других языках):" << endl;
+    
+    // В C++ нет меток для break/continue
+    // Альтернатива: флаги или goto (не рекомендуется)
+    
+    found = false;
+    for (size_t i = 0; i < matrix.size() && !found; i++) {
+        for (size_t j = 0; j < matrix[i].size(); j++) {
+            if (matrix[i][j] == target) {
+                cout << "Найдено с флагом" << endl;
+                found = true;
+                break;
+            }
+        }
+    }
+    
+    // Пример 5: Continue с меткой в других языках
+    cout << "\n5. Эмуляция сложных сценариев:" << endl;
+    
+    // Обработка только диагональных элементов
+    for (size_t i = 0; i < matrix.size(); i++) {
+        for (size_t j = 0; j < matrix[i].size(); j++) {
+            if (i != j) continue;  // Пропустить недиагональные
+            
+            cout << "Диагональный элемент [" << i << "][" << j 
+                 << "] = " << matrix[i][j] << endl;
+        }
+    }
+    
+    // Пример 6: Бесконечные циклы с break
+    cout << "\n6. Бесконечные циклы с условием выхода:" << endl;
+    
+    int attempts = 0;
+    const int max_attempts = 10;
+    
+    while (true) {  // Бесконечный цикл
+        attempts++;
+        cout << "Попытка " << attempts << endl;
+        
+        // Условие выхода
+        if (attempts >= max_attempts) {
+            cout << "Достигнут лимит попыток" << endl;
+            break;
+        }
+        
+        // Успешное завершение
+        if (attempts == 5) {
+            cout << "Успех на 5-й попытке!" << endl;
+            break;
+        }
+    }
+    
+    // Пример 7: Continue в do-while
+    cout << "\n7. Continue в do-while (особенности):" << endl;
+    
+    int n = 0;
+    do {
+        n++;
+        
+        if (n % 2 == 0) {
+            continue;  // Пропустить четные числа
+        }
+        
+        cout << n << " ";
+        
+        // В do-while continue переходит к проверке условия!
+        // Это важно: условие проверяется ПОСЛЕ continue
+        
+    } while (n < 10);
+    cout << endl;
+    
+    // Пример 8: Оптимизация с break/continue
+    cout << "\n8. Оптимизация производительности:" << endl;
+    
+    // Поиск простых чисел с оптимизацией
+    vector<int> primes;
+    const int limit = 30;
+    
+    for (int num = 2; num <= limit; num++) {
+        bool is_prime = true;
+        
+        // Проверка деления на числа до sqrt(num)
+        for (int divisor = 2; divisor * divisor <= num; divisor++) {
+            if (num % divisor == 0) {
+                is_prime = false;
+                break;  // Не простое, дальше проверять не нужно
+            }
+        }
+        
+        if (is_prime) {
+            primes.push_back(num);
+        }
+    }
+    
+    cout << "Простые числа до " << limit << ": ";
+    for (int p : primes) cout << p << " ";
+    cout << endl;
+    
+    return 0;
+}
+```
+
+---
+
+## **6. ОПТИМИЗАЦИЯ ЦИКЛОВ: Производительность**
+
+### **Критические аспекты производительности:**
+```cpp
+// ==============================================
+// Файл: 06_loop_optimization.cpp
+// Оптимизация циклов для производительности
+// ==============================================
+
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <random>
+#include <numeric>
+using namespace std;
+using namespace chrono;
+
+// Вспомогательные функции для измерений
+template<typename Func>
+double measure_time(Func f, int iterations = 100) {
+    auto start = high_resolution_clock::now();
+    f();
+    auto end = high_resolution_clock::now();
+    return duration_cast<duration<double>>(end - start).count();
+}
+
+int main() {
+    cout << "=== ОПТИМИЗАЦИЯ ЦИКЛОВ ===\n" << endl;
+    
+    const int SIZE = 1000000;
+    vector<double> data(SIZE);
+    
+    // Заполняем случайными данными
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> dis(0.0, 100.0);
+    
+    for (auto& val : data) {
+        val = dis(gen);
+    }
+    
+    // Пример 1: Loop unrolling (развертывание цикла)
+    cout << "1. Loop unrolling:" << endl;
+    
+    double sum1 = 0.0, sum2 = 0.0;
+    
+    // Обычный цикл
+    auto time1 = measure_time([&]() {
+        for (int i = 0; i < SIZE; i++) {
+            sum1 += data[i];
+        }
+    });
+    
+    // Развернутый цикл (4 итерации за раз)
+    auto time2 = measure_time([&]() {
+        int i = 0;
+        int limit = SIZE - 4;
+        
+        // Основная часть
+        for (; i < limit; i += 4) {
+            sum2 += data[i] + data[i+1] + data[i+2] + data[i+3];
+        }
+        
+        // Остаток
+        for (; i < SIZE; i++) {
+            sum2 += data[i];
+        }
+    });
+    
+    cout << "Обычный цикл: " << time1 << " сек, сумма = " << sum1 << endl;
+    cout << "Развернутый цикл: " << time2 << " сек, сумма = " << sum2 << endl;
+    cout << "Ускорение: " << (time1 / time2) << "x" << endl;
+    
+    // Пример 2: Hoisting инвариантов
+    cout << "\n2. Hoisting инвариантов:" << endl;
+    
+    const double factor = 3.14159;
+    vector<double> result1(SIZE), result2(SIZE);
+    
+    // Плохо: вычисление инварианта в цикле
+    auto time3 = measure_time([&]() {
+        for (int i = 0; i < SIZE; i++) {
+            result1[i] = data[i] * sin(factor * 2.0);  // sin вычисляется SIZE раз
+        }
+    });
+    
+    // Хорошо: вычисление инварианта вне цикла
+    auto time4 = measure_time([&]() {
+        double invariant = sin(factor * 2.0);  // Один раз!
+        for (int i = 0; i < SIZE; i++) {
+            result2[i] = data[i] * invariant;
+        }
+    });
+    
+    cout << "Без hoisting: " << time3 << " сек" << endl;
+    cout << "С hoisting: " << time4 << " сек" << endl;
+    cout << "Ускорение: " << (time3 / time4) << "x" << endl;
+    
+    // Пример 3: Минимизация обращений к памяти
+    cout << "\n3. Локализация данных:" << endl;
+    
+    // Плохо: много обращений к памяти
+    vector<vector<double>> matrix(1000, vector<double>(1000));
+    
+    auto time5 = measure_time([&]() {
+        for (size_t i = 0; i < matrix.size(); i++) {
+            for (size_t j = 0; j < matrix[i].size(); j++) {
+                matrix[i][j] = i + j;  // Неоптимальный доступ
+            }
+        }
+    });
+    
+    auto time6 = measure_time([&]() {
+        for (size_t i = 0; i < matrix.size(); i++) {
+            // Локальная ссылка на строку
+            auto& row = matrix[i];
+            for (size_t j = 0; j < row.size(); j++) {
+                row[j] = i + j;  // Более эффективный доступ
+            }
+        }
+    });
+    
+    cout << "Прямой доступ: " << time5 << " сек" << endl;
+    cout << "С локальной ссылкой: " << time6 << " сек" << endl;
+    cout << "Ускорение: " << (time5 / time6) << "x" << endl;
+    
+    // Пример 4: Strength reduction
+    cout << "\n4. Strength reduction:" << endl;
+    
+    // Замена дорогих операций дешевыми
+    vector<double> output1(SIZE), output2(SIZE);
+    
+    auto time7 = measure_time([&]() {
+        for (int i = 0; i < SIZE; i++) {
+            output1[i] = data[i] / 2.0;  // Деление
+        }
+    });
+    
+    auto time8 = measure_time([&]() {
+        double half = 0.5;
+        for (int i = 0; i < SIZE; i++) {
+            output2[i] = data[i] * half;  // Умножение (быстрее)
+        }
+    });
+    
+    cout << "Деление: " << time7 << " сек" << endl;
+    cout << "Умножение: " << time8 << " сек" << endl;
+    cout << "Ускорение: " << (time7 / time8) << "x" << endl;
+    
+    // Пример 5: Предвычисление условий
+    cout << "\n5. Предвычисление условий:" << endl;
+    
+    int threshold = 50;
+    int count1 = 0, count2 = 0;
+    
+    auto time9 = measure_time([&]() {
+        for (double val : data) {
+            if (val > threshold && val < 100) {  // Два сравнения
+                count1++;
+            }
+        }
+    });
+    
+    auto time10 = measure_time([&]() {
+        // Предвычисляем верхнюю границу
+        bool check_upper = (threshold < 100);
+        for (double val : data) {
+            if (val > threshold && check_upper) {  // Одно сравнение
+                count2++;
+            }
+        }
+    });
+    
+    cout << "Без предвычисления: " << time9 << " сек" << endl;
+    cout << "С предвычислением: " << time10 << " сек" << endl;
+    cout << "Ускорение: " << (time9 / time10) << "x" << endl;
+    
+    // Пример 6: Векторизация (компиляторная оптимизация)
+    cout << "\n6. Автоматическая векторизация:" << endl;
+    
+    vector<double> vec1(SIZE), vec2(SIZE), vec3(SIZE);
+    
+    // Простой цикл - компилятор может векторизовать
+    auto time11 = measure_time([&]() {
+        for (int i = 0; i < SIZE; i++) {
+            vec3[i] = vec1[i] + vec2[i];  // SIMD-оптимизация возможна
+        }
+    });
+    
+    // Сложный цикл - может мешать векторизации
+    auto time12 = measure_time([&]() {
+        for (int i = 0; i < SIZE; i++) {
+            if (vec1[i] > 0) {  // Ветвление мешает векторизации
+                vec3[i] = vec1[i] + vec2[i];
+            }
+        }
+    });
+    
+    cout << "Простой цикл (векторизуемый): " << time11 << " сек" << endl;
+    cout << "Сложный цикл: " << time12 << " сек" << endl;
+    
+    return 0;
+}
+```
+
+---
+
+
+## 🔥 Часть 2: Практические задачи 
+
+### 🟢 Уровень 1: Начальный 
 
 **Задача 1.1: Таблица умножения (for)**
 ```cpp
@@ -612,7 +1685,7 @@ do {
 
 ---
 
-### 🟡 Уровень 2: Средний (20 минут)
+### 🟡 Уровень 2: Средний 
 
 **Задача 2.1: Поиск простых чисел**
 ```cpp
@@ -647,7 +1720,7 @@ do {
 
 ---
 
-### 🟠 Уровень 3: Продвинутый (15 минут)
+### 🟠 Уровень 3: Продвинутый 
 
 **Задача 3.1: Числа Фибоначчи**
 ```cpp
@@ -678,7 +1751,7 @@ do {
 
 ---
 
-### 🔴 Уровень 4: Сложный (10 минут)
+### 🔴 Уровень 4: Сложный 
 
 **Задача 4.1: Игра "Угадай число"**
 ```cpp
@@ -702,7 +1775,7 @@ do {
 
 ---
 
-## 🏆 Часть 3: Зачетная задача (15 минут)
+## 🏆 Часть 3: Зачетная задача
 
 ### 🎖️ Итоговая задача: "Интеллектуальный калькулятор"
 
@@ -762,25 +1835,6 @@ do {
 
 ---
 
-## 📋 Критерии оценки:
-
-### ✅ Обязательные требования:
-1. Использованы все три типа циклов
-2. Применены break и continue
-3. Корректная обработка ввода
-4. Нет зацикливания
-
-### ⭐ Бонусные баллы:
-- Проверка на ошибки ввода
-- Красивый формат вывода
-- Эффективные алгоритмы
-- Дополнительные функции
-
-### 📊 Оценка по времени:
-- 60+ мин: 5 задач выполнено ✓
-- 45-59 мин: 3-4 задачи ✓  
-- 30-44 мин: 2 задачи ✓
-- <30 мин: нужна дополнительная практика
 
 ---
 
@@ -879,10 +1933,3 @@ int main() {
 }
 ```
 
-**Удачи! Помните: практика - путь к мастерству!** 💪
-
-Каждую задачу начинайте с анализа:
-1. Какой тип цикла лучше подходит?
-2. Какое условие продолжения/остановки?
-3. Нужны ли break/continue?
-4. Как проверить граничные случаи?
