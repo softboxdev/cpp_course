@@ -1091,7 +1091,7 @@ int main() {
     
     // Пример 3: Меню пользователя
     cout << "\n3. Меню пользователя (классический пример):" << endl;
-    /*
+    
     int choice;
     do {
         cout << "\n=== МЕНЮ ===" << endl;
@@ -1108,33 +1108,11 @@ int main() {
             default: cout << "Неверный выбор"; break;
         }
     } while (choice != 3);
-    */
     
-    // Пример 4: Валидация ввода
-    cout << "\n4. Валидация пользовательского ввода:" << endl;
     
-    int age;
-    bool valid_input = false;
-    
-    do {
-        cout << "Введите возраст (1-120): ";
-        // if (cin >> age) {
-        //     if (age >= 1 && age <= 120) {
-        //         valid_input = true;
-        //     } else {
-        //         cout << "Возраст должен быть от 1 до 120!" << endl;
-        //     }
-        // } else {
-        //     cout << "Неверный формат!" << endl;
-        //     cin.clear();
-        //     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        // }
-    } while (!valid_input);
-    
-    cout << "Возраст принят: " << age << endl;
-    
-    // Пример 5: Игры и симуляции
-    cout << "\n5. Игровые циклы:" << endl;
+
+    // Пример 4: Игры и симуляции
+    cout << "\n4. Игровые циклы:" << endl;
     
     random_device rd;
     mt19937 gen(rd());
@@ -1164,8 +1142,8 @@ int main() {
         }
     } while (!guessed);
     
-    // Пример 6: Обработка до первого успеха
-    cout << "\n6. Повтор до успеха:" << endl;
+    // Пример 5: Обработка до первого успеха
+    cout << "\n5. Повтор до успеха:" << endl;
     
     int max_attempts = 5;
     int current_attempt = 0;
@@ -1188,22 +1166,22 @@ int main() {
         }
     } while (!success && current_attempt < max_attempts);
     
-    // Пример 7: Обработка последовательностей
-    cout << "\n7. Обработка до определенного условия:" << endl;
+    // Пример 6: Обработка последовательностей
+    cout << "\n6. Обработка до определенного условия:" << endl;
     
     // Чтение чисел до отрицательного
     vector<int> numbers;
     int num;
     
     cout << "Введите положительные числа (отрицательное для завершения):" << endl;
-    /*
+    
     do {
         cin >> num;
         if (num >= 0) {
             numbers.push_back(num);
         }
     } while (num >= 0);
-    */
+    
     
     cout << "Введено " << numbers.size() << " чисел" << endl;
     
