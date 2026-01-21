@@ -1357,3 +1357,818 @@ int main() {
 6. **Не возвращайте ссылки/указатели на локальные переменные**
 
 Это полное руководство покрывает все аспекты работы с указателями и ссылками в C++. Практикуйтесь с каждым примером, чтобы глубоко понять различия и правильно выбирать нужный инструмент для каждой задачи!
+
+# Задачи на функции и рекурсию для начинающих с подробным разбором
+
+## Задача 1: Базовые функции и параметры по значению
+
+### Условие:
+Написать функцию для вычисления n-го числа Фибоначчи и функцию для проверки числа на простоту.
+
+### Разбор:
+**Что такое параметры по значению?**
+- При передаче параметра по значению создается копия переменной
+- Изменения внутри функции не влияют на исходную переменную
+- Хорошо подходит для базовых типов данных (int, double, char)
+
+```cpp
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+// 1. Функция вычисления n-го числа Фибоначчи (параметры по значению)
+int fibonacci(int n) {
+    // Параметр n передается по значению - создается копия
+    // Это безопасно, так как мы не меняем исходное значение
+    
+    // Базовые случаи для рекурсии
+    if (n <= 0) return 0;  // F(0) = 0
+    if (n == 1) return 1;  // F(1) = 1
+    
+    // Рекурсивный вызов
+    // Каждый вызов получает свою копию параметра
+    return fibonacci(n - 1) + fibonacci(n - 2);
+    
+    // Проблема: это неэффективная реализация O(2^n)
+    // F(4) вычисляется как:
+    // F(4) = F(3) + F(2)
+    // F(3) = F(2) + F(1)
+    // F(2) = F(1) + F(0) = 1 + 0 = 1
+    // И так далее...
+}
+
+// 2. Функция проверки числа на простоту (параметр по значению)
+bool isPrime(int number) {
+    // number передается по значению - создается копия
+    // Мы можем безопасно изменять number внутри функции
+    
+    if (number <= 1) return false;  // Простые числа начинаются с 2
+    if (number == 2) return true;   // 2 - единственное четное простое число
+    if (number % 2 == 0) return false;  // Остальные четные числа не простые
+    
+    // Проверяем делители до квадратного корня из числа
+    // Используем i += 2 чтобы проверять только нечетные делители
+    for (int i = 3; i <= sqrt(number); i += 2) {
+        if (number % i == 0) {
+            return false;  // Нашли делитель - число не простое
+        }
+    }
+    
+    return true;  // Делителей не нашлось - число простое
+}
+
+// 3. Улучшенная версия Фибоначчи с мемоизацией (статическая переменная)
+int fibonacciFast(int n) {
+    // Статический массив для хранения уже вычисленных значений
+    static int memo[100] = {0};
+    
+    // Инициализируем базовые случаи
+    if (n <= 0) return 0;
+    if (n == 1) return 1;
+    
+    // Если значение уже вычислено, возвращаем его
+    if (memo[n] != 0) {
+        return memo[n];
+    }
+    
+    // Вычисляем и сохраняем результат
+    memo[n] = fibonacciFast(n - 1) + fibonacciFast(n - 2);
+    return memo[n];
+}
+
+int main() {
+    // Демонстрация работы с параметрами по значению
+    
+    int num = 10;  // Исходная переменная
+    
+    cout << "=== Числа Фибоначчи ===" << endl;
+    for (int i = 0; i <= num; i++) {
+        cout << "F(" << i << ") = " << fibonacci(i) << endl;
+        // i передается по значению - fibonacci получает копию
+        // Исходное i не меняется
+    }
+    
+    cout << "\n=== Быстрое вычисление ===" << endl;
+    cout << "F(20) = " << fibonacciFast(20) << endl;
+    cout << "F(30) = " << fibonacciFast(30) << endl;
+    
+    cout << "\n=== Проверка на простоту ===" << endl;
+    int testNumbers[] = {1, 2, 3, 4, 17, 25, 29, 100};
+    
+    for (int i = 0; i < 8; i++) {
+        int currentNum = testNumbers[i];
+        bool prime = isPrime(currentNum);
+        // currentNum передается по значению в isPrime
+        
+        cout << currentNum << " - " << (prime ? "простое" : "составное") << endl;
+    }
+    
+    // Важно: параметры по значению защищают исходные данные
+    int original = 5;
+    int result = fibonacci(original);
+    cout << "\noriginal = " << original << ", result = " << result << endl;
+    // original осталось 5, несмотря на все вычисления в fibonacci
+    
+    return 0;
+}
+```
+
+## Задача 2: Параметры по ссылке и swap
+
+### Условие:
+Реализовать функцию swap для обмена значений двух переменных и функцию для подсчета суммы цифр числа с накоплением результата.
+
+### Разбор:
+**Что такое параметры по ссылке?**
+- Передается ссылка на исходную переменную, а не копия
+- Изменения внутри функции влияют на исходную переменную
+- Эффективно для больших объектов (экономит память)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 1. Классическая функция swap (параметры по ссылке)
+void swapValues(int& a, int& b) {
+    // & означает "ссылка на"
+    // a и b - это псевдонимы для исходных переменных
+    // Все изменения a и b изменяют исходные переменные
+    
+    int temp = a;  // temp получает значение, на которое ссылается a
+    a = b;         // a теперь ссылается на значение b
+    b = temp;      // b теперь ссылается на старое значение a
+    
+    // Пример: если вызвать swapValues(x, y) где x=5, y=10
+    // temp = 5 (значение x)
+    // x = 10 (теперь x равно 10)
+    // y = 5 (теперь y равно 5)
+}
+
+// 2. НЕПРАВИЛЬНАЯ версия swap (параметры по значению)
+void swapWrong(int a, int b) {
+    int temp = a;
+    a = b;
+    b = temp;
+    // Здесь меняются только локальные копии!
+    // Исходные переменные не изменятся
+}
+
+// 3. Функция для разворота массива (параметры по ссылке)
+void reverseArray(int arr[], int size) {
+    // arr[] передается как указатель, но мы работаем с исходным массивом
+    for (int i = 0; i < size / 2; i++) {
+        swapValues(arr[i], arr[size - 1 - i]);
+    }
+}
+
+// 4. Функция для подсчета суммы цифр с накоплением (ссылка для результата)
+void sumOfDigits(int number, int& sum) {
+    // number - по значению (копия, можно изменять)
+    // sum - по ссылке (будет накапливать результат)
+    
+    sum = 0;  // Инициализируем sum (это изменяет исходную переменную)
+    
+    // Обрабатываем отрицательные числа
+    if (number < 0) {
+        number = -number;  // Работаем с модулем
+    }
+    
+    // Суммируем цифры
+    while (number > 0) {
+        int digit = number % 10;  // Последняя цифра
+        sum += digit;            // Добавляем к сумме
+        number /= 10;            // Убираем последнюю цифру
+    }
+    
+    // Пример: number = 123
+    // 1 итерация: digit = 3, sum = 3, number = 12
+    // 2 итерация: digit = 2, sum = 5, number = 1
+    // 3 итерация: digit = 1, sum = 6, number = 0
+}
+
+// 5. Функция для подсчета суммы цифр (возвращаемое значение)
+int sumOfDigitsReturn(int number) {
+    int sum = 0;
+    
+    if (number < 0) {
+        number = -number;
+    }
+    
+    while (number > 0) {
+        sum += number % 10;
+        number /= 10;
+    }
+    
+    return sum;  // Возвращаем копию значения
+}
+
+// 6. Функция с несколькими результатами (ссылки для возврата значений)
+void minMaxSum(int arr[], int size, int& minVal, int& maxVal, int& sum) {
+    if (size == 0) return;
+    
+    minVal = arr[0];
+    maxVal = arr[0];
+    sum = 0;
+    
+    for (int i = 0; i < size; i++) {
+        if (arr[i] < minVal) minVal = arr[i];
+        if (arr[i] > maxVal) maxVal = arr[i];
+        sum += arr[i];
+    }
+}
+
+int main() {
+    cout << "=== Демонстрация swap ===" << endl;
+    
+    int x = 5, y = 10;
+    cout << "До swap: x = " << x << ", y = " << y << endl;
+    
+    swapValues(x, y);  // Правильный swap
+    cout << "После swap: x = " << x << ", y = " << y << endl;
+    
+    // Попробуем неправильную версию
+    swapWrong(x, y);  // Ничего не изменится!
+    cout << "После swapWrong: x = " << x << ", y = " << y << endl;
+    
+    cout << "\n=== Разворот массива ===" << endl;
+    int arr[] = {1, 2, 3, 4, 5};
+    int size = 5;
+    
+    cout << "Исходный массив: ";
+    for (int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    reverseArray(arr, size);
+    
+    cout << "Развернутый массив: ";
+    for (int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    cout << "\n=== Сумма цифр числа ===" << endl;
+    
+    int number = 12345;
+    int sum1 = 0, sum2 = 0;
+    
+    // Версия с ссылкой
+    sumOfDigits(number, sum1);
+    cout << "Сумма цифр " << number << " (ссылка): " << sum1 << endl;
+    
+    // Версия с возвращаемым значением
+    sum2 = sumOfDigitsReturn(number);
+    cout << "Сумма цифр " << number << " (возврат): " << sum2 << endl;
+    
+    cout << "\n=== Несколько результатов через ссылки ===" << endl;
+    int testArr[] = {3, 1, 4, 1, 5, 9, 2, 6};
+    int arrSize = 8;
+    int minVal, maxVal, totalSum;
+    
+    minMaxSum(testArr, arrSize, minVal, maxVal, totalSum);
+    
+    cout << "Массив: ";
+    for (int i = 0; i < arrSize; i++) {
+        cout << testArr[i] << " ";
+    }
+    cout << endl;
+    
+    cout << "Минимум: " << minVal << endl;
+    cout << "Максимум: " << maxVal << endl;
+    cout << "Сумма: " << totalSum << endl;
+    cout << "Среднее: " << (double)totalSum / arrSize << endl;
+    
+    return 0;
+}
+```
+
+## Задача 3: Рекурсия и факториал (задача с собеседования)
+
+### Условие:
+Реализовать вычисление факториала рекурсивно и итеративно. Добавить подсчет количества вызовов.
+
+### Разбор:
+**Что такое рекурсия?**
+- Функция вызывает саму себя
+- Должен быть базовый случай (когда рекурсия останавливается)
+- Каждый вызов уменьшает проблему
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// Глобальная переменная для подсчета вызовов (обычно так не делают!)
+int callCount = 0;
+
+// 1. Классическая рекурсивная версия факториала
+long long factorialRecursive(int n) {
+    callCount++;  // Увеличиваем счетчик вызовов
+    
+    // Базовый случай: 0! = 1, 1! = 1
+    if (n <= 1) {
+        return 1;
+    }
+    
+    // Рекурсивный случай: n! = n * (n-1)!
+    return n * factorialRecursive(n - 1);
+    
+    // Пример для n = 4:
+    // factorial(4) = 4 * factorial(3)
+    // factorial(3) = 3 * factorial(2)
+    // factorial(2) = 2 * factorial(1)
+    // factorial(1) = 1
+    // Затем раскручиваем стек:
+    // factorial(2) = 2 * 1 = 2
+    // factorial(3) = 3 * 2 = 6
+    // factorial(4) = 4 * 6 = 24
+}
+
+// 2. Итеративная версия факториала (цикл)
+long long factorialIterative(int n) {
+    long long result = 1;
+    
+    for (int i = 2; i <= n; i++) {
+        result *= i;
+    }
+    
+    return result;
+}
+
+// 3. Рекурсия с хвостовой оптимизацией (теоретически)
+long long factorialTailRecursive(int n, long long accumulator = 1) {
+    callCount++;
+    
+    // Базовый случай
+    if (n <= 1) {
+        return accumulator;
+    }
+    
+    // Хвостовая рекурсия: результат накапливается в параметре
+    return factorialTailRecursive(n - 1, n * accumulator);
+    
+    // Компиляторы C++ обычно не оптимизируют хвостовую рекурсию,
+    // но такой подход полезен для понимания
+}
+
+// 4. Рекурсия для возведения в степень
+double power(double base, int exponent) {
+    // Базовый случай
+    if (exponent == 0) {
+        return 1.0;
+    }
+    
+    // Если степень отрицательная
+    if (exponent < 0) {
+        return 1.0 / power(base, -exponent);
+    }
+    
+    // Рекурсивный случай
+    return base * power(base, exponent - 1);
+}
+
+// 5. Оптимизированное возведение в степень (O(log n))
+double powerFast(double base, int exponent) {
+    // Базовый случай
+    if (exponent == 0) {
+        return 1.0;
+    }
+    
+    // Если степень отрицательная
+    if (exponent < 0) {
+        return 1.0 / powerFast(base, -exponent);
+    }
+    
+    // Если степень четная
+    if (exponent % 2 == 0) {
+        double half = powerFast(base, exponent / 2);
+        return half * half;
+    } 
+    // Если степень нечетная
+    else {
+        return base * powerFast(base, exponent - 1);
+    }
+    
+    // Пример: 2^10
+    // 2^10 = (2^5)^2
+    // 2^5 = 2 * 2^4
+    // 2^4 = (2^2)^2
+    // 2^2 = (2^1)^2
+    // 2^1 = 2 * 2^0 = 2 * 1 = 2
+    // Затем поднимаемся обратно
+}
+
+// 6. Рекурсивная функция для суммы массива
+int arraySumRecursive(int arr[], int size) {
+    // Базовый случай: пустой массив
+    if (size == 0) {
+        return 0;
+    }
+    
+    // Рекурсивный случай: последний элемент + сумма остальных
+    return arr[size - 1] + arraySumRecursive(arr, size - 1);
+    
+    // Пример: arr = [1, 2, 3], size = 3
+    // arraySum([1,2,3], 3) = 3 + arraySum([1,2], 2)
+    // arraySum([1,2], 2) = 2 + arraySum([1], 1)
+    // arraySum([1], 1) = 1 + arraySum([], 0)
+    // arraySum([], 0) = 0
+    // Итого: 1 + 2 + 3 + 0 = 6
+}
+
+// 7. Поиск максимального элемента в массиве рекурсивно
+int findMaxRecursive(int arr[], int size) {
+    // Базовый случай: один элемент
+    if (size == 1) {
+        return arr[0];
+    }
+    
+    // Рекурсивный случай: сравниваем первый элемент с максимумом остальных
+    int maxOfRest = findMaxRecursive(arr + 1, size - 1);
+    return (arr[0] > maxOfRest) ? arr[0] : maxOfRest;
+    
+    // arr + 1 - это указатель на следующий элемент
+    // Пример: arr = [3, 1, 4, 2], size = 4
+    // max([3,1,4,2], 4) = max(3, max([1,4,2], 3))
+    // max([1,4,2], 3) = max(1, max([4,2], 2))
+    // max([4,2], 2) = max(4, max([2], 1))
+    // max([2], 1) = 2
+    // max(4, 2) = 4
+    // max(1, 4) = 4
+    // max(3, 4) = 4
+}
+
+int main() {
+    cout << "=== Факториал рекурсивно ===" << endl;
+    
+    for (int i = 0; i <= 10; i++) {
+        callCount = 0;
+        long long result = factorialRecursive(i);
+        cout << i << "! = " << result << " (вызовов: " << callCount << ")" << endl;
+    }
+    
+    cout << "\n=== Факториал итеративно ===" << endl;
+    for (int i = 0; i <= 10; i++) {
+        cout << i << "! = " << factorialIterative(i) << endl;
+    }
+    
+    cout << "\n=== Факториал с хвостовой рекурсией ===" << endl;
+    callCount = 0;
+    cout << "5! = " << factorialTailRecursive(5) << " (вызовов: " << callCount << ")" << endl;
+    
+    cout << "\n=== Возведение в степень ===" << endl;
+    double base = 2.0;
+    
+    for (int exp = -3; exp <= 3; exp++) {
+        cout << base << "^" << exp << " = " << power(base, exp);
+        cout << " (быстро: " << powerFast(base, exp) << ")" << endl;
+    }
+    
+    cout << "\n=== Сумма массива рекурсивно ===" << endl;
+    int arr[] = {1, 2, 3, 4, 5};
+    int size = 5;
+    
+    cout << "Массив: ";
+    for (int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    int sum = arraySumRecursive(arr, size);
+    cout << "Сумма элементов: " << sum << endl;
+    
+    cout << "\n=== Максимум в массиве рекурсивно ===" << endl;
+    int arr2[] = {3, 1, 4, 1, 5, 9, 2, 6};
+    int size2 = 8;
+    
+    cout << "Массив: ";
+    for (int i = 0; i < size2; i++) {
+        cout << arr2[i] << " ";
+    }
+    cout << endl;
+    
+    int maxVal = findMaxRecursive(arr2, size2);
+    cout << "Максимальный элемент: " << maxVal << endl;
+    
+    // Важное замечание о рекурсии
+    cout << "\n=== Предупреждение о глубокой рекурсии ===" << endl;
+    
+    try {
+        // Факториал 20 уже очень большое число
+        cout << "20! = " << factorialRecursive(20) << endl;
+        
+        // Факториал больших чисел может вызвать переполнение стека
+        // cout << "10000! - это вызовет переполнение стека!" << endl;
+        // factorialRecursive(10000); // ОПАСНО!
+    } catch (...) {
+        cout << "Произошло переполнение стека!" << endl;
+    }
+    
+    return 0;
+}
+```
+
+## Задача 4: Алгоритмы с собеседований (бинарный поиск, палиндромы)
+
+### Условие:
+Реализовать бинарный поиск рекурсивно и итеративно, проверить строку на палиндром.
+
+### Разбор:
+**Задачи с реальных собеседований:**
+- Бинарный поиск - основа многих алгоритмов
+- Палиндромы - проверка симметричности
+- Работа со строками и массивами
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cctype>  // для tolower()
+using namespace std;
+
+// 1. Бинарный поиск (итеративная версия)
+int binarySearchIterative(int arr[], int size, int target) {
+    int left = 0;
+    int right = size - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;  // Предотвращает переполнение
+        
+        if (arr[mid] == target) {
+            return mid;  // Нашли элемент
+        } else if (arr[mid] < target) {
+            left = mid + 1;  // Ищем в правой половине
+        } else {
+            right = mid - 1;  // Ищем в левой половине
+        }
+    }
+    
+    return -1;  // Элемент не найден
+}
+
+// 2. Бинарный поиск (рекурсивная версия)
+int binarySearchRecursive(int arr[], int left, int right, int target) {
+    // Базовый случай: интервал пуст
+    if (left > right) {
+        return -1;
+    }
+    
+    int mid = left + (right - left) / 2;
+    
+    // Базовый случай: нашли элемент
+    if (arr[mid] == target) {
+        return mid;
+    }
+    
+    // Рекурсивные случаи
+    if (arr[mid] < target) {
+        // Ищем в правой половине
+        return binarySearchRecursive(arr, mid + 1, right, target);
+    } else {
+        // Ищем в левой половине
+        return binarySearchRecursive(arr, left, mid - 1, target);
+    }
+}
+
+// 3. Проверка строки на палиндром (рекурсивно)
+bool isPalindromeRecursive(const string& str, int start, int end) {
+    // Базовый случай: строка длиной 0 или 1 символа
+    if (start >= end) {
+        return true;
+    }
+    
+    // Если символы на концах не совпадают
+    if (str[start] != str[end]) {
+        return false;
+    }
+    
+    // Рекурсивно проверяем подстроку без крайних символов
+    return isPalindromeRecursive(str, start + 1, end - 1);
+}
+
+// 4. Проверка строки на палиндром (итеративно)
+bool isPalindromeIterative(const string& str) {
+    int start = 0;
+    int end = str.length() - 1;
+    
+    while (start < end) {
+        if (str[start] != str[end]) {
+            return false;
+        }
+        start++;
+        end--;
+    }
+    
+    return true;
+}
+
+// 5. Проверка палиндрома без учета регистра и пробелов
+bool isPalindromeAdvanced(const string& str) {
+    int start = 0;
+    int end = str.length() - 1;
+    
+    while (start < end) {
+        // Пропускаем не-буквенные символы слева
+        while (start < end && !isalnum(str[start])) {
+            start++;
+        }
+        
+        // Пропускаем не-буквенные символы справа
+        while (start < end && !isalnum(str[end])) {
+            end--;
+        }
+        
+        // Сравниваем символы без учета регистра
+        if (tolower(str[start]) != tolower(str[end])) {
+            return false;
+        }
+        
+        start++;
+        end--;
+    }
+    
+    return true;
+}
+
+// 6. Нахождение наибольшего общего делителя (НОД) рекурсивно
+int gcdRecursive(int a, int b) {
+    // Алгоритм Евклида
+    // Базовый случай: если b = 0, то НОД = a
+    if (b == 0) {
+        return a;
+    }
+    
+    // Рекурсивный случай: НОД(a, b) = НОД(b, a % b)
+    return gcdRecursive(b, a % b);
+    
+    // Пример: НОД(48, 18)
+    // gcd(48, 18) = gcd(18, 48 % 18 = 12)
+    // gcd(18, 12) = gcd(12, 18 % 12 = 6)
+    // gcd(12, 6) = gcd(6, 12 % 6 = 0)
+    // gcd(6, 0) = 6
+}
+
+// 7. Нахождение НОД итеративно
+int gcdIterative(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// 8. Реверс строки рекурсивно
+void reverseStringRecursive(string& str, int start, int end) {
+    // Базовый случай
+    if (start >= end) {
+        return;
+    }
+    
+    // Меняем символы местами
+    swap(str[start], str[end]);
+    
+    // Рекурсивно реверсируем подстроку
+    reverseStringRecursive(str, start + 1, end - 1);
+}
+
+// 9. Вывод всех подмножеств массива (рекурсивно)
+void printSubsets(int arr[], int size, int index, string current = "") {
+    // Базовый случай: дошли до конца массива
+    if (index == size) {
+        cout << "{" << current << "}" << endl;
+        return;
+    }
+    
+    // Рекурсивные случаи:
+    // 1. Не включаем текущий элемент
+    printSubsets(arr, size, index + 1, current);
+    
+    // 2. Включаем текущий элемент
+    string newCurrent = current;
+    if (!current.empty()) {
+        newCurrent += ", ";
+    }
+    newCurrent += to_string(arr[index]);
+    printSubsets(arr, size, index + 1, newCurrent);
+}
+
+int main() {
+    cout << "=== Бинарный поиск ===" << endl;
+    
+    int sortedArr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};
+    int arrSize = 10;
+    
+    cout << "Массив: ";
+    for (int i = 0; i < arrSize; i++) {
+        cout << sortedArr[i] << " ";
+    }
+    cout << endl;
+    
+    int target = 7;
+    int resultIterative = binarySearchIterative(sortedArr, arrSize, target);
+    int resultRecursive = binarySearchRecursive(sortedArr, 0, arrSize - 1, target);
+    
+    cout << "Ищем " << target << ":" << endl;
+    cout << "Итеративно: индекс " << resultIterative << endl;
+    cout << "Рекурсивно: индекс " << resultRecursive << endl;
+    
+    target = 8;  // Не существует в массиве
+    resultIterative = binarySearchIterative(sortedArr, arrSize, target);
+    cout << "Ищем " << target << ": индекс " << resultIterative << " (не найден)" << endl;
+    
+    cout << "\n=== Проверка палиндромов ===" << endl;
+    
+    string testStrings[] = {"radar", "hello", "A man a plan a canal Panama", "racecar", "12321", "not a palindrome"};
+    
+    for (const string& str : testStrings) {
+        bool simple = isPalindromeIterative(str);
+        bool recursive = isPalindromeRecursive(str, 0, str.length() - 1);
+        bool advanced = isPalindromeAdvanced(str);
+        
+        cout << "\"" << str << "\":" << endl;
+        cout << "  Простая проверка: " << (simple ? "палиндром" : "не палиндром") << endl;
+        cout << "  Рекурсивная: " << (recursive ? "палиндром" : "не палиндром") << endl;
+        cout << "  Продвинутая: " << (advanced ? "палиндром" : "не палиндром") << endl;
+    }
+    
+    cout << "\n=== Наибольший общий делитель ===" << endl;
+    
+    int pairs[][2] = {{48, 18}, {1071, 462}, {17, 13}, {100, 25}};
+    
+    for (int i = 0; i < 4; i++) {
+        int a = pairs[i][0];
+        int b = pairs[i][1];
+        
+        int gcdR = gcdRecursive(a, b);
+        int gcdI = gcdIterative(a, b);
+        
+        cout << "НОД(" << a << ", " << b << "):" << endl;
+        cout << "  Рекурсивно: " << gcdR << endl;
+        cout << "  Итеративно: " << gcdI << endl;
+    }
+    
+    cout << "\n=== Реверс строки рекурсивно ===" << endl;
+    
+    string str = "Hello, World!";
+    cout << "Исходная строка: " << str << endl;
+    
+    reverseStringRecursive(str, 0, str.length() - 1);
+    cout << "Реверсированная: " << str << endl;
+    
+    cout << "\n=== Все подмножества массива ===" << endl;
+    
+    int smallArr[] = {1, 2, 3};
+    int smallSize = 3;
+    
+    cout << "Массив: {1, 2, 3}" << endl;
+    cout << "Все подмножества:" << endl;
+    printSubsets(smallArr, smallSize, 0);
+    
+    // Важные замечания для собеседований
+    cout << "\n=== Советы для собеседований ===" << endl;
+    cout << "1. Бинарный поиск: всегда проверяйте corner cases!" << endl;
+    cout << "   - Пустой массив" << endl;
+    cout << "   - Один элемент" << endl;
+    cout << "   - Элемент не существует" << endl;
+    cout << "   - Все элементы одинаковые" << endl;
+    
+    cout << "\n2. Рекурсия: помните о стеке!" << endl;
+    cout << "   - Глубокая рекурсия может вызвать Stack Overflow" << endl;
+    cout << "   - Всегда проверяйте базовый случай" << endl;
+    cout << "   - Рассмотрите итеративную альтернативу" << endl;
+    
+    cout << "\n3. Строки: учитывайте регистр и пробелы!" << endl;
+    cout << "   - tolower() для игнорирования регистра" << endl;
+    cout << "   - isalnum() для проверки алфавитно-цифровых символов" << endl;
+    cout << "   - Пустая строка - это палиндром" << endl;
+    
+    return 0;
+}
+```
+
+## Ключевые выводы для новичков:
+
+### 1. **Параметры по значению vs по ссылке:**
+- **По значению**: безопасно, но медленно для больших объектов
+- **По ссылке**: эффективно, но можно случайно изменить исходные данные
+- **Константные ссылки**: безопасно и эффективно для чтения больших объектов
+
+### 2. **Рекурсия:**
+- Всегда должен быть **базовый случай**
+- Каждый рекурсивный вызов должен **уменьшать задачу**
+- Помните о **глубине рекурсии** и стеке
+- Для больших n используйте **итеративные решения**
+
+### 3. **Возвращаемые значения:**
+- Может возвращать **один** результат
+- Для нескольких результатов используйте **ссылки или указатели**
+- **void** функции не возвращают значения
+
+### 4. **Советы для собеседований:**
+- Всегда проверяйте **крайние случаи** (empty, null, 0, 1)
+- Объясняйте **сложность алгоритма** (O(n), O(log n))
+- Предлагайте **оптимизации**
+- Пишите **чистый, читаемый код**
+- Комментируйте **ход своих мыслей**
+
+Эти задачи охватывают все основные аспекты функций и рекурсии в C++, которые часто встречаются на собеседованиях для начинающих разработчиков.
