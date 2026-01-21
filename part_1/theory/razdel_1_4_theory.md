@@ -4292,7 +4292,7 @@ valgrind --tool=helgrind ./your_program
 
 Эта структура охватывает все указанные темы и предоставляет практические примеры для понимания модели памяти и инструментов отладки.
 
-# 📚 Урок 1.5: Функции и их параметры. Рекурсия
+# 📚 Функции и их параметры. Рекурсия
 
 ## 🎯 Цель урока
 Научиться создавать, использовать и понимать функции в C++, включая параметры, возвращаемые значения и рекурсивные функции.
@@ -5016,3 +5016,835 @@ int task3(int n) {
 | **Параметр по ссылке** | `тип& имя` | `void f(int& x)` | Изменить исходную переменную |
 | **const параметр** | `const тип& имя` | `void f(const vector& v)` | Передача больших объектов |
 | **Рекурсия** | Функция вызывает себя | `int f(n) { return n * f(n
+
+
+# Все виды синтаксиса параметров функций в C++
+
+## 1. Параметры по значению (самые простые)
+
+### Базовый синтаксис
+```cpp
+тип имя_функции(тип параметр1, тип параметр2, ...)
+```
+
+### Примеры и задачи
+
+**Задача 1.1:** Функция для вычисления площади прямоугольника
+```cpp
+#include <iostream>
+using namespace std;
+
+// Параметры по значению - создаются копии
+double rectangleArea(double width, double height) {
+    return width * height;
+}
+
+int main() {
+    double w = 5.5, h = 3.2;
+    
+    // Передаются КОПИИ w и h
+    double area = rectangleArea(w, h);
+    
+    cout << "Ширина: " << w << endl;
+    cout << "Высота: " << h << endl;
+    cout << "Площадь: " << area << endl;
+    
+    // w и h не изменяются функцией
+    cout << "После вызова функции w = " << w << ", h = " << h << endl;
+    
+    return 0;
+}
+
+// Плюсы параметров по значению:
+// 1. Простота понимания
+// 2. Безопасность (оригинальные данные защищены)
+// Минусы:
+// 1. Накладные расходы на копирование больших объектов
+```
+
+**Задача 1.2:** Функция swap, которая НЕ работает (демонстрация ограничения)
+```cpp
+#include <iostream>
+using namespace std;
+
+// НЕПРАВИЛЬНАЯ функция swap - параметры по значению
+void wrongSwap(int a, int b) {
+    int temp = a;
+    a = b;
+    b = temp;
+    cout << "Внутри wrongSwap: a = " << a << ", b = " << b << endl;
+}
+
+int main() {
+    int x = 10, y = 20;
+    
+    cout << "До wrongSwap: x = " << x << ", y = " << y << endl;
+    
+    wrongSwap(x, y);  // Передаются копии!
+    
+    cout << "После wrongSwap: x = " << x << ", y = " << y << endl;
+    // x и y НЕ поменялись местами!
+    
+    return 0;
+}
+
+/*
+Вывод:
+До wrongSwap: x = 10, y = 20
+Внутри wrongSwap: a = 20, b = 10
+После wrongSwap: x = 10, y = 20
+*/
+```
+
+## 2. Параметры по ссылке (Reference Parameters)
+
+### Синтаксис
+```cpp
+тип имя_функции(тип& параметр1, тип& параметр2, ...)
+```
+
+### Примеры и задачи
+
+**Задача 2.1:** Правильная функция swap
+```cpp
+#include <iostream>
+using namespace std;
+
+// Правильная функция swap - параметры по ссылке
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+// Функция для увеличения значения
+void increment(int& x, int step = 1) {
+    x += step;  // Изменяет оригинальную переменную
+}
+
+// Функция, возвращающая несколько значений через ссылки
+void getMinMax(const int arr[], int size, int& min, int& max) {
+    if(size == 0) return;
+    
+    min = arr[0];
+    max = arr[0];
+    
+    for(int i = 1; i < size; i++) {
+        if(arr[i] < min) min = arr[i];
+        if(arr[i] > max) max = arr[i];
+    }
+}
+
+int main() {
+    // Пример 1: swap
+    int x = 10, y = 20;
+    cout << "До swap: x = " << x << ", y = " << y << endl;
+    swap(x, y);
+    cout << "После swap: x = " << x << ", y = " << y << endl;
+    
+    // Пример 2: increment
+    int counter = 5;
+    cout << "\nДо increment: counter = " << counter << endl;
+    increment(counter, 3);
+    cout << "После increment(counter, 3): counter = " << counter << endl;
+    increment(counter);  // используем значение по умолчанию
+    cout << "После increment(counter): counter = " << counter << endl;
+    
+    // Пример 3: возврат нескольких значений
+    int numbers[] = {3, 7, 2, 9, 1, 4, 6, 8, 5};
+    int minValue, maxValue;
+    
+    getMinMax(numbers, 9, minValue, maxValue);
+    
+    cout << "\nМинимальное значение: " << minValue << endl;
+    cout << "Максимальное значение: " << maxValue << endl;
+    
+    return 0;
+}
+```
+
+**Задача 2.2:** Модификация элементов массива
+```cpp
+#include <iostream>
+using namespace std;
+
+// Умножение всех элементов массива на множитель
+void multiplyArray(int arr[], int size, int multiplier) {
+    // arr[] фактически передается как указатель (ссылка на первый элемент)
+    for(int i = 0; i < size; i++) {
+        arr[i] *= multiplier;  // Изменяет оригинальный массив
+    }
+}
+
+// Заполнение массива последовательными числами
+void fillArray(int arr[], int size, int start = 0) {
+    for(int i = 0; i < size; i++) {
+        arr[i] = start + i;
+    }
+}
+
+void printArray(const int arr[], int size) {
+    for(int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    const int SIZE = 5;
+    int myArray[SIZE];
+    
+    // Заполняем массив
+    fillArray(myArray, SIZE, 10);
+    cout << "Исходный массив: ";
+    printArray(myArray, SIZE);
+    
+    // Умножаем все элементы на 2
+    multiplyArray(myArray, SIZE, 2);
+    cout << "После умножения на 2: ";
+    printArray(myArray, SIZE);
+    
+    // Меняем только часть массива
+    multiplyArray(myArray + 2, 2, 10);  // Умножаем элементы с индексами 2 и 3
+    cout << "После умножения элементов 2-3 на 10: ";
+    printArray(myArray, SIZE);
+    
+    return 0;
+}
+```
+
+## 3. Константные параметры (Const Parameters)
+
+### Синтаксис
+```cpp
+// Константный параметр по значению (редко используется)
+тип имя_функции(const тип параметр)
+
+// Константный параметр по ссылке (рекомендуется для больших объектов)
+тип имя_функции(const тип& параметр)
+```
+
+### Примеры и задачи
+
+**Задача 3.1:** Безопасная работа с большими объектами
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Student {
+    string name;
+    int age;
+    double gpa;
+    string courses[10];
+    int courseCount;
+};
+
+// БЕЗОПАСНО: константная ссылка
+// Не создает копию и гарантирует неизменность
+void printStudent(const Student& student) {
+    cout << "Студент: " << student.name << endl;
+    cout << "Возраст: " << student.age << endl;
+    cout << "Средний балл: " << student.gpa << endl;
+    
+    // Нельзя изменить student!
+    // student.age = 20;  // ОШИБКА компиляции
+}
+
+// НЕЭФФЕКТИВНО: параметр по значению
+// Создает полную копию структуры
+void printStudentInefficient(Student student) {
+    cout << "Имя: " << student.name << endl;
+    // Здесь тоже нельзя изменить оригинал,
+    // но создается ненужная копия
+}
+
+// ОПАСНО: обычная ссылка
+// Может случайно изменить данные
+void printStudentUnsafe(Student& student) {
+    cout << "Студент: " << student.name << endl;
+    student.age++;  // Неожиданный побочный эффект!
+    cout << "Теперь возраст: " << student.age << endl;
+}
+
+// Сравнение двух студентов (обе ссылки константные)
+bool compareStudents(const Student& s1, const Student& s2) {
+    return s1.gpa > s2.gpa;  // Сравниваем по GPA
+}
+
+int main() {
+    Student alice = {"Алиса", 20, 4.5, {"Математика", "Физика"}, 2};
+    Student bob = {"Боб", 21, 4.2, {"Программирование", "История"}, 2};
+    
+    cout << "=== Безопасная версия ===" << endl;
+    printStudent(alice);
+    
+    cout << "\n=== Небезопасная версия ===" << endl;
+    cout << "Возраст Алисы до вызова: " << alice.age << endl;
+    printStudentUnsafe(alice);
+    cout << "Возраст Алисы после вызова: " << alice.age << endl;
+    
+    cout << "\n=== Сравнение студентов ===" << endl;
+    if(compareStudents(alice, bob)) {
+        cout << alice.name << " имеет лучший средний балл" << endl;
+    } else {
+        cout << bob.name << " имеет лучший средний балл" << endl;
+    }
+    
+    return 0;
+}
+```
+
+**Задача 3.2:** Константные параметры с массивами
+```cpp
+#include <iostream>
+using namespace std;
+
+// Константный массив - гарантия, что функция не изменит данные
+double calculateAverage(const int grades[], int count) {
+    if(count == 0) return 0.0;
+    
+    int sum = 0;
+    for(int i = 0; i < count; i++) {
+        sum += grades[i];
+        // grades[i] = 0;  // ОШИБКА! Массив константный
+    }
+    
+    return static_cast<double>(sum) / count;
+}
+
+// Поиск элемента в константном массиве
+int findIndex(const int arr[], int size, int value) {
+    for(int i = 0; i < size; i++) {
+        if(arr[i] == value) {
+            return i;
+        }
+    }
+    return -1;  // не найден
+}
+
+// Константная ссылка на массив фиксированного размера
+void printFixedArray(const int (&arr)[5]) {
+    // Этот синтаксис гарантирует, что массив имеет именно 5 элементов
+    for(int i = 0; i < 5; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    int grades[] = {5, 4, 3, 5, 4, 5};
+    int size = 6;
+    
+    cout << "Оценки: ";
+    for(int i = 0; i < size; i++) cout << grades[i] << " ";
+    cout << endl;
+    
+    double avg = calculateAverage(grades, size);
+    cout << "Средний балл: " << avg << endl;
+    
+    // Поиск оценки
+    int searchGrade = 3;
+    int index = findIndex(grades, size, searchGrade);
+    if(index != -1) {
+        cout << "Оценка " << searchGrade << " найдена на позиции " << index << endl;
+    }
+    
+    // Массив фиксированного размера
+    int fixedArray[5] = {1, 2, 3, 4, 5};
+    cout << "Массив фиксированного размера: ";
+    printFixedArray(fixedArray);
+    
+    return 0;
+}
+```
+
+## 4. Параметры-указатели (Pointer Parameters)
+
+### Синтаксис
+```cpp
+тип имя_функции(тип* параметр)
+```
+
+### Примеры и задачи
+
+**Задача 4.1:** Работа с указателями как параметрами
+```cpp
+#include <iostream>
+using namespace std;
+
+// Принимает указатель на int
+void incrementByPointer(int* ptr) {
+    if(ptr != nullptr) {  // Всегда проверяем указатель!
+        (*ptr)++;  // Декрементируем значение по указателю
+    }
+}
+
+// Функция для обмена значений через указатели
+void swapPointers(int* a, int* b) {
+    if(a != nullptr && b != nullptr) {
+        int temp = *a;
+        *a = *b;
+        *b = temp;
+    }
+}
+
+// Возврат результата через указатель
+void getStats(const int arr[], int size, int* min, int* max, double* avg) {
+    if(size == 0 || min == nullptr || max == nullptr || avg == nullptr) {
+        return;
+    }
+    
+    *min = arr[0];
+    *max = arr[0];
+    int sum = 0;
+    
+    for(int i = 0; i < size; i++) {
+        if(arr[i] < *min) *min = arr[i];
+        if(arr[i] > *max) *max = arr[i];
+        sum += arr[i];
+    }
+    
+    *avg = static_cast<double>(sum) / size;
+}
+
+// Сравнение указателей и ссылок
+void demoPointersVsReferences() {
+    int x = 10;
+    int y = 20;
+    
+    int* ptrX = &x;  // указатель
+    int& refY = y;   // ссылка
+    
+    cout << "x = " << x << ", y = " << y << endl;
+    cout << "*ptrX = " << *ptrX << ", refY = " << refY << endl;
+    
+    // Изменение через указатель
+    *ptrX = 100;
+    cout << "После *ptrX = 100: x = " << x << endl;
+    
+    // Изменение через ссылку
+    refY = 200;
+    cout << "После refY = 200: y = " << y << endl;
+    
+    // Указатель можно перенаправить
+    ptrX = &y;
+    cout << "После ptrX = &y: *ptrX = " << *ptrX << endl;
+    
+    // Ссылку перенаправить НЕЛЬЗЯ
+    // refY = x;  // Это присваивание значения, не перенаправление ссылки
+}
+
+int main() {
+    int a = 5, b = 10;
+    
+    // Работа с incrementByPointer
+    cout << "До incrementByPointer: a = " << a << endl;
+    incrementByPointer(&a);  // Передаем адрес переменной
+    cout << "После incrementByPointer: a = " << a << endl;
+    
+    // Работа с swapPointers
+    cout << "\nДо swapPointers: a = " << a << ", b = " << b << endl;
+    swapPointers(&a, &b);
+    cout << "После swapPointers: a = " << a << ", b = " << b << endl;
+    
+    // Получение статистики через указатели
+    int numbers[] = {3, 7, 2, 9, 1, 4, 6};
+    int minVal, maxVal;
+    double average;
+    
+    getStats(numbers, 7, &minVal, &maxVal, &average);
+    
+    cout << "\nСтатистика массива:" << endl;
+    cout << "Минимум: " << minVal << endl;
+    cout << "Максимум: " << maxVal << endl;
+    cout << "Среднее: " << average << endl;
+    
+    cout << "\n=== Демонстрация указателей vs ссылок ===" << endl;
+    demoPointersVsReferences();
+    
+    return 0;
+}
+```
+
+**Задача 4.2:** Динамические массивы и указатели
+```cpp
+#include <iostream>
+#include <cstdlib>  // для rand()
+using namespace std;
+
+// Создание и заполнение динамического массива
+int* createRandomArray(int size, int minVal, int maxVal) {
+    if(size <= 0) return nullptr;
+    
+    int* arr = new int[size];
+    
+    for(int i = 0; i < size; i++) {
+        arr[i] = minVal + rand() % (maxVal - minVal + 1);
+    }
+    
+    return arr;  // Возвращаем указатель
+}
+
+// Изменение размера массива (realloc аналог)
+int* resizeArray(int* arr, int oldSize, int newSize) {
+    if(newSize <= 0) {
+        delete[] arr;
+        return nullptr;
+    }
+    
+    int* newArr = new int[newSize];
+    
+    // Копируем старые данные
+    int copySize = (oldSize < newSize) ? oldSize : newSize;
+    for(int i = 0; i < copySize; i++) {
+        newArr[i] = arr[i];
+    }
+    
+    // Освобождаем старую память
+    delete[] arr;
+    
+    return newArr;
+}
+
+// Функция принимает указатель на указатель
+void allocateMatrix(int*** matrix, int rows, int cols) {
+    *matrix = new int*[rows];
+    for(int i = 0; i < rows; i++) {
+        (*matrix)[i] = new int[cols];
+    }
+}
+
+void freeMatrix(int** matrix, int rows) {
+    for(int i = 0; i < rows; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+int main() {
+    srand(time(0));  // Инициализация генератора случайных чисел
+    
+    // Пример 1: Динамический массив
+    int size = 5;
+    int* dynamicArray = createRandomArray(size, 1, 100);
+    
+    cout << "Исходный массив: ";
+    for(int i = 0; i < size; i++) {
+        cout << dynamicArray[i] << " ";
+    }
+    cout << endl;
+    
+    // Изменяем размер массива
+    int newSize = 8;
+    dynamicArray = resizeArray(dynamicArray, size, newSize);
+    
+    cout << "После увеличения до " << newSize << " элементов: ";
+    for(int i = 0; i < newSize; i++) {
+        cout << dynamicArray[i] << " ";
+    }
+    cout << endl;
+    
+    delete[] dynamicArray;  // Не забываем освободить память!
+    
+    // Пример 2: Двумерный массив (матрица)
+    int** matrix;
+    int rows = 3, cols = 4;
+    
+    allocateMatrix(&matrix, rows, cols);
+    
+    // Заполняем матрицу
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            matrix[i][j] = i * 10 + j;
+        }
+    }
+    
+    cout << "\nМатрица " << rows << "x" << cols << ":" << endl;
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            cout << matrix[i][j] << "\t";
+        }
+        cout << endl;
+    }
+    
+    freeMatrix(matrix, rows);
+    
+    return 0;
+}
+```
+
+## 5. Смешанные параметры и продвинутые случаи
+
+**Задача 5.1:** Все виды параметров в одной функции
+```cpp
+#include <iostream>
+using namespace std;
+
+// Функция с разными типами параметров:
+// 1. По значению (value)
+// 2. По ссылке (reference)
+// 3. Константная ссылка (const reference)
+// 4. Указатель (pointer)
+// 5. Константный указатель (const pointer)
+// 6. Указатель на константу (pointer to const)
+void complexFunction(
+    int byValue,           // 1. Простая копия
+    int& byRef,            // 2. Ссылка (можно изменить)
+    const int& byConstRef, // 3. Константная ссылка (только чтение)
+    int* byPointer,        // 4. Указатель (можно изменить значение)
+    int* const constPtr,   // 5. Константный указатель (адрес не меняется)
+    const int* ptrToConst  // 6. Указатель на константу
+) {
+    cout << "\n=== Внутри complexFunction ===" << endl;
+    
+    // 1. Параметр по значению
+    byValue = 999;  // Меняем копию, оригинал не меняется
+    cout << "byValue (копия): " << byValue << endl;
+    
+    // 2. Ссылка
+    byRef = 888;  // Меняем оригинал
+    cout << "byRef (изменили оригинал): " << byRef << endl;
+    
+    // 3. Константная ссылка
+    // byConstRef = 777;  // ОШИБКА! Нельзя изменить
+    cout << "byConstRef (только чтение): " << byConstRef << endl;
+    
+    // 4. Указатель
+    if(byPointer != nullptr) {
+        *byPointer = 666;  // Меняем значение по указателю
+        cout << "*byPointer (изменили через указатель): " << *byPointer << endl;
+        
+        // Можно изменить сам указатель
+        int temp = 100;
+        byPointer = &temp;
+        cout << "Перенаправили byPointer на temp: " << *byPointer << endl;
+    }
+    
+    // 5. Константный указатель
+    if(constPtr != nullptr) {
+        *constPtr = 555;  // Можем изменить значение
+        cout << "*constPtr (значение изменено): " << *constPtr << endl;
+        
+        // constPtr = &temp;  // ОШИБКА! Нельзя изменить адрес
+    }
+    
+    // 6. Указатель на константу
+    // *ptrToConst = 444;  // ОШИБКА! Нельзя изменить значение
+    
+    if(ptrToConst != nullptr) {
+        cout << "*ptrToConst (только чтение): " << *ptrToConst << endl;
+        
+        // Можно изменить сам указатель
+        int temp = 200;
+        ptrToConst = &temp;
+        cout << "Перенаправили ptrToConst на temp: " << *ptrToConst << endl;
+    }
+}
+
+int main() {
+    int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+    
+    cout << "До вызова функции:" << endl;
+    cout << "a = " << a << ", b = " << b << ", c = " << c << endl;
+    cout << "d = " << d << ", e = " << e << ", f = " << f << endl;
+    
+    complexFunction(a, b, c, &d, &e, &f);
+    
+    cout << "\nПосле вызова функции:" << endl;
+    cout << "a (по значению) = " << a << " - не изменился" << endl;
+    cout << "b (по ссылке) = " << b << " - изменился" << endl;
+    cout << "c (конст. ссылка) = " << c << " - не изменился" << endl;
+    cout << "d (указатель) = " << d << " - изменился" << endl;
+    cout << "e (конст. указатель) = " << e << " - изменился" << endl;
+    cout << "f (указ. на константу) = " << f << " - не изменился" << endl;
+    
+    return 0;
+}
+```
+
+**Задача 5.2:** Функции с параметрами по умолчанию
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Параметры по умолчанию ДОЛЖНЫ идти в конце
+void printUserInfo(
+    string name,
+    int age = 0,                    // параметр по умолчанию
+    string city = "Не указан",      // еще один
+    bool showDetails = true        // и еще один
+) {
+    cout << "Имя: " << name << endl;
+    
+    if(showDetails) {
+        cout << "Возраст: " << age << endl;
+        cout << "Город: " << city << endl;
+    }
+    
+    cout << "---" << endl;
+}
+
+// НЕВЕРНО! Параметры по умолчанию не могут быть в начале
+// void badFunction(int a = 0, int b, int c) {  // ОШИБКА!
+// }
+
+// Перегрузка с параметрами по умолчанию
+double calculateArea(double radius) {
+    return 3.14159 * radius * radius;
+}
+
+double calculateArea(double length, double width, bool isRectangle = true) {
+    if(isRectangle) {
+        return length * width;
+    } else {
+        // Для треугольника
+        return 0.5 * length * width;
+    }
+}
+
+int main() {
+    // Разные способы вызова функции с параметрами по умолчанию
+    printUserInfo("Анна", 25, "Москва", true);
+    printUserInfo("Борис", 30, "Санкт-Петербург");  // showDetails = true по умолчанию
+    printUserInfo("Виктор", 35);                    // city и showDetails по умолчанию
+    printUserInfo("Галина");                        // все параметры по умолчанию, кроме name
+    printUserInfo("Дмитрий", 40, "Казань", false); // не показывать детали
+    
+    cout << "\n=== Расчет площадей ===" << endl;
+    cout << "Площадь круга радиусом 5: " << calculateArea(5) << endl;
+    cout << "Площадь прямоугольника 4x6: " << calculateArea(4, 6) << endl;
+    cout << "Площадь треугольника (основание 4, высота 6): " 
+         << calculateArea(4, 6, false) << endl;
+    
+    return 0;
+}
+```
+
+## 6. Шаблонные функции (Template Functions)
+
+**Задача 6.1:** Обобщенные функции
+```cpp
+#include <iostream>
+using namespace std;
+
+// Шаблонная функция для обмена значений
+template<typename T>
+void templateSwap(T& a, T& b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
+// Шаблонная функция для поиска максимума
+template<typename T>
+T getMax(T a, T b) {
+    return (a > b) ? a : b;
+}
+
+// Шаблонная функция для массива
+template<typename T, int N>
+void printArray(T (&arr)[N]) {
+    cout << "Массив из " << N << " элементов: ";
+    for(int i = 0; i < N; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+// Специализация шаблона для строк
+template<>
+void printArray<char>(char (&arr)[10]) {
+    cout << "Строка: ";
+    for(int i = 0; i < 10 && arr[i] != '\0'; i++) {
+        cout << arr[i];
+    }
+    cout << endl;
+}
+
+int main() {
+    // Работа с разными типами данных
+    int x = 5, y = 10;
+    cout << "До swap: x = " << x << ", y = " << y << endl;
+    templateSwap(x, y);
+    cout << "После swap: x = " << x << ", y = " << y << endl;
+    
+    double d1 = 3.14, d2 = 2.71;
+    cout << "\nДо swap: d1 = " << d1 << ", d2 = " << d2 << endl;
+    templateSwap(d1, d2);
+    cout << "После swap: d1 = " << d1 << ", d2 = " << d2 << endl;
+    
+    // Поиск максимума
+    cout << "\nМаксимум из 5 и 10: " << getMax(x, y) << endl;
+    cout << "Максимум из 3.14 и 2.71: " << getMax(d1, d2) << endl;
+    cout << "Максимум из 'A' и 'B': " << getMax('A', 'B') << endl;
+    
+    // Работа с массивами разных типов
+    int intArr[5] = {1, 2, 3, 4, 5};
+    double doubleArr[3] = {1.1, 2.2, 3.3};
+    char str[10] = "Hello";
+    
+    printArray(intArr);
+    printArray(doubleArr);
+    printArray(str);  // Используется специализация для char[10]
+    
+    return 0;
+}
+```
+
+## Практические задания для закрепления
+
+### Задание 1: Калькулятор с разными типами параметров
+Создайте калькулятор, который использует:
+- Параметры по значению для простых операций
+- Параметры по ссылке для накопления результата
+- Константные параметры для безопасных вычислений
+
+### Задание 2: Система управления студентами
+Создайте функции для:
+- Добавления студента (параметры по значению/ссылке)
+- Поиска студента (константные параметры)
+- Обновления информации (параметры-указатели)
+- Сортировки студентов (ссылки на массивы)
+
+### Задание 3: Матричные операции
+Реализуйте операции с матрицами:
+- Сложение/умножение (константные ссылки на матрицы)
+- Транспонирование (параметр-указатель на матрицу)
+- Нахождение определителя (рекурсия + разные типы параметров)
+
+### Задание 4: Умный массив
+Создайте класс/структуру "умный массив" с методами, использующими:
+- Константные методы для чтения
+- Ссылки для модификации
+- Указатели для работы с памятью
+- Шаблоны для разных типов данных
+
+## Золотые правила выбора типа параметра
+
+1. **Используйте параметры по значению** для:
+   - Простых типов (int, double, char, bool)
+   - Когда нужна безопасность (защита от изменений)
+   - Когда размер объекта мал
+
+2. **Используйте константные ссылки** для:
+   - Больших объектов (структуры, классы, массивы)
+   - Когда нужно только чтение данных
+   - Для эффективности (избегание копирования)
+
+3. **Используйте обычные ссылки** для:
+   - Когда нужно изменить оригинальный объект
+   - Для возврата нескольких значений
+   - Когда копирование дорого или невозможно
+
+4. **Используйте указатели** для:
+   - Работы с динамической памятью
+   - Когда параметр может отсутствовать (nullptr)
+   - Для массивов (хотя лучше использовать ссылки на массивы)
+
+5. **Всегда используйте const**:
+   - Когда функция не должна изменять параметр
+   - Для параметров, передаваемых по ссылке или указателю
+   - Для документирования намерений
+
