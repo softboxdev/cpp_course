@@ -391,100 +391,6 @@ int main() {
 }
 ```
 
-## Часть 3: Практические задачи (15 минут)
-
-### Задача 3.1: Калькулятор статистики массива
-
-```cpp
-#include <iostream>
-
-// Структура для хранения статистики
-struct ArrayStats {
-    int min;
-    int max;
-    int sum;
-    double average;
-};
-
-// Функция для вычисления статистики массива
-ArrayStats calculateStats(const int* arr, int size) {
-    ArrayStats stats;  // Создаём объект структуры
-    
-    if (size <= 0) {  // Проверка на пустой массив
-        // Устанавливаем значения по умолчанию
-        stats.min = 0;
-        stats.max = 0;
-        stats.sum = 0;
-        stats.average = 0.0;
-        return stats;
-    }
-    
-    // Инициализируем значения первым элементом
-    stats.min = arr[0];
-    stats.max = arr[0];
-    stats.sum = 0;
-    
-    // Проходим по всем элементам массива
-    for (int i = 0; i < size; i++) {
-        // Обновляем минимум
-        if (arr[i] < stats.min) {
-            stats.min = arr[i];
-        }
-        
-        // Обновляем максимум
-        if (arr[i] > stats.max) {
-            stats.max = arr[i];
-        }
-        
-        // Суммируем
-        stats.sum += arr[i];
-    }
-    
-    // Вычисляем среднее
-    stats.average = static_cast<double>(stats.sum) / size;
-    
-    return stats;  // Возвращаем структуру
-}
-
-// Функция для вывода статистики
-void printStats(const ArrayStats& stats) {
-    std::cout << "=== СТАТИСТИКА МАССИВА ===" << std::endl;
-    std::cout << "Минимальное значение: " << stats.min << std::endl;
-    std::cout << "Максимальное значение: " << stats.max << std::endl;
-    std::cout << "Сумма элементов: " << stats.sum << std::endl;
-    std::cout << "Среднее значение: " << stats.average << std::endl;
-}
-
-int main() {
-    std::cout << "=== КАЛЬКУЛЯТОР СТАТИСТИКИ МАССИВА ===" << std::endl;
-    std::cout << std::endl;
-    
-    // Создаём тестовый массив
-    const int SIZE = 8;
-    int testArray[SIZE] = {23, 45, 12, 67, 89, 34, 56, 78};
-    
-    // Выводим исходный массив
-    std::cout << "Исходный массив: ";
-    for (int i = 0; i < SIZE; i++) {
-        std::cout << testArray[i] << " ";
-    }
-    std::cout << std::endl << std::endl;
-    
-    // Вычисляем статистику
-    ArrayStats stats = calculateStats(testArray, SIZE);
-    
-    // Выводим результаты
-    printStats(stats);
-    
-    std::cout << std::endl;
-    
-    // Дополнительная задача: найти медиану
-    // Для этого нужно отсортировать массив
-    
-    return 0;
-}
-```
-
 ### Задача 3.2: Поиск и замена в массиве
 
 ```cpp
@@ -709,8 +615,6 @@ int main() {
 ```
 
 ## Заключение и домашнее задание
-
-### Что мы изучили за 45 минут:
 
 1. **Основы указателей**: создание, инициализация, разыменование
 2. **Связь указателей и массивов**: имя массива как указатель
