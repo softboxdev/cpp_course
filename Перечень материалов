@@ -50,12 +50,20 @@ https://disk.yandex.ru/i/vU6Dvpmg9k-uSg
 Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_6_practice.pdf
 Видео https://disk.yandex.ru/i/eBlv49J4FqfBrA 
 
-1.7. Область видимости переменных и типы памяти. Пространства имён Локальные/глобальные переменные, static, extern, namespace
+1.7. Область видимости переменных и типы памяти. Пространства имён	Локальные/глобальные переменные, static, extern, namespace
+	Создание многофайловых проектов, использование пространств имен
 
 Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_7_theory.pdf
-Видео https://disk.yandex.ru/i/IYEliNaS-K02-g
+Видео https://disk.yandex.ru/i/Y3HmrmLpVQ0ZOA 
 Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_7_practice.pdf
-Видео : пришлю в следующем письме
+Видео : https://disk.yandex.ru/i/s5TxpFtHP21dZQ
+
+1.8. Указатели. Массивы и параметры функций	Указатели, арифметика указателей, передача массивов в функции
+	Работа с указателями, функции для работы с массивами
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_8_theory.pdf
+Видео https://disk.yandex.ru/i/_ufp1ERWbJ7QIQ
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_8_practice.pdf
+Видео : https://disk.yandex.ru/i/62zbETFkXHUbcQ
 
 Теория (все материалы) https://github.com/softboxdev/cpp_course/tree/main/part_1/theory
 Практика (все материалы) https://github.com/softboxdev/cpp_course/tree/main/part_1/practice
