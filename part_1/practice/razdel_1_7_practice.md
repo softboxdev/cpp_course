@@ -259,73 +259,36 @@ g++ main.cpp math.cpp greetings.cpp -o program_v2
 ### Шаг 2: calculator.h с namespace
 
 ```cpp
-// calculator.h - Калькулятор с пространством имен
-
+// calculator.h
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 
-// Создаем пространство имен Calculator
 namespace Calculator {
-    // Внутри namespace объявляем функции
-    int add(int a, int b);
-    int subtract(int a, int b);
-    int multiply(int a, int b);
-    double divide(int a, int b);
-    
-    // Можно объявить константу
-    const double PI = 3.14159;
-    
-    // Можно объявить вложенный namespace
-    namespace Advanced {
-        int power(int base, int exponent);
-        double squareRoot(double number);
-    }
+    int multiply(int a, int b);    // ОБЪЯВЛЕНИЕ
+    double divide(int a, int b);   // ОБЪЯВЛЕНИЕ
 }
 
-#endif // CALCULATOR_H
+#endif
 ```
 
 ### Шаг 3: calculator.cpp с реализацией
 
 ```cpp
-// calculator.cpp - Реализация Calculator
-
+// calculator.cpp
 #include "calculator.h"
-#include <cmath>  // Для sqrt() и pow()
 
-// Реализуем функции из namespace Calculator
 namespace Calculator {
-    int add(int a, int b) {
-        return a + b;
-    }
-    
-    int subtract(int a, int b) {
-        return a - b;
-    }
-    
+    // Реализация функции multiply
     int multiply(int a, int b) {
         return a * b;
     }
     
+    // Реализация функции divide  
     double divide(int a, int b) {
-        if (b == 0) return 0;
+        if (b == 0) {
+            return 0.0;  // защита от деления на ноль
+        }
         return static_cast<double>(a) / b;
-    }
-    
-    // Реализуем функции вложенного namespace
-    namespace Advanced {
-        int power(int base, int exponent) {
-            int result = 1;
-            for (int i = 0; i < exponent; i++) {
-                result *= base;
-            }
-            return result;
-        }
-        
-        double squareRoot(double number) {
-            if (number < 0) return 0;
-            return sqrt(number);
-        }
     }
 }
 ```
@@ -402,61 +365,14 @@ namespace Greetings {
 ### Шаг 6: main.cpp с использованием namespace
 
 ```cpp
-// main.cpp - Главный файл с использованием namespace
-
+// main.cpp
 #include <iostream>
-#include <string>
-#include "calculator.h"
-#include "greetings.h"
-
-// Разные способы использования namespace
+#include "calculator.h"  // ПОДКЛЮЧАЕМ заголовочный файл
 
 int main() {
-    std::cout << "=== ПРОЕКТ С ПРОСТРАНСТВАМИ ИМЕН ===" << std::endl;
-    std::cout << "===================================" << std::endl;
-    
-    // СПОСОБ 1: Полное имя с ::
-    std::cout << "\n1. Использование с полным именем:" << std::endl;
-    std::cout << "5 + 3 = " << Calculator::add(5, 3) << std::endl;
-    std::cout << "Приветствие: " << Greetings::getHelloMessage() << std::endl;
-    
-    // СПОСОБ 2: Using declaration (для конкретных функций)
-    using Calculator::multiply;
-    using Greetings::getPersonalHello;
-    
-    std::cout << "\n2. Using declaration:" << std::endl;
-    std::cout << "6 * 7 = " << multiply(6, 7) << std::endl;
-    std::cout << getPersonalHello("Анна") << std::endl;
-    
-    // СПОСОБ 3: Using directive (для всего namespace)
-    {
-        using namespace Calculator;
-        std::cout << "\n3. Using directive (в блоке):" << std::endl;
-        std::cout << "10 - 4 = " << subtract(10, 4) << std::endl;
-        std::cout << "PI = " << PI << std::endl;
-    }
-    
-    // Вложенные namespace
-    std::cout << "\n4. Вложенные namespace:" << std::endl;
-    std::cout << "2^3 = " << Calculator::Advanced::power(2, 3) << std::endl;
-    std::cout << "√16 = " << Calculator::Advanced::squareRoot(16) << std::endl;
-    
-    // Конфликт имен (если бы были)
-    int add = 100;  // Локальная переменная
-    std::cout << "\n5. Конфликт имен:" << std::endl;
-    std::cout << "Локальная переменная add = " << add << std::endl;
-    std::cout << "Функция Calculator::add(2, 3) = " << Calculator::add(2, 3) << std::endl;
-    
-    // Псевдонимы для длинных имен
-    namespace Calc = Calculator;
-    namespace CalcAdv = Calculator::Advanced;
-    
-    std::cout << "\n6. Псевдонимы (aliases):" << std::endl;
-    std::cout << "Calc::add(10, 20) = " << Calc::add(10, 20) << std::endl;
-    std::cout << "CalcAdv::power(3, 2) = " << CalcAdv::power(3, 2) << std::endl;
-    
-    std::cout << "\n" << Greetings::getGoodbyeMessage() << std::endl;
-    
+    std::cout << "Пример работы:" << std::endl;
+    std::cout << "6 * 7 = " << Calculator::multiply(6, 7) << std::endl;
+    std::cout << "15 / 4 = " << Calculator::divide(15, 4) << std::endl;
     return 0;
 }
 ```
