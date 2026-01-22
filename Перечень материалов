@@ -1,0 +1,63 @@
+Перечень материалов
+
+1.1. Знакомство с C++. Структура программы, переменные и их типы Теория: История C++, компиляция, структура программы, основные типы данных (int, float, double, char, bool), объявление переменных, константы
+1.1. Знакомство с C++. Структура программы, переменные и их типы Написание первой программы, работа с переменными, простые вычисления, ввод/вывод (cin/cout)
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_1_theory.pdf
+Видео: https://disk.yandex.ru/i/Eu9XJeiJJjBn_Q
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_1_practice.pdf
+Видео: https://disk.yandex.ru/i/5s7G99k7Ehms9Q
+
+1.2. Операторы ветвления. Логические операции Условные операторы (if/else, switch), логические операции (&&, ||, !), тернарный оператор
+Решение задач на условия, калькуляторы, проверка введенных данных
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_2_theory.pdf
+Видео https://disk.yandex.ru/i/SJkY-sH8naT7Ww
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_2_practice.pdf
+Видео https://disk.yandex.ru/i/qi3JwUiowrugtA
+https://disk.yandex.ru/i/FoZD9Q6Sof0JWA
+
+1.3. Циклические конструкции Циклы for, while, do-while, операторы break и continue
+Решение задач на циклы, таблицы умножения, обработка последовательностей
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_3_theory.pdf
+Видео https://disk.yandex.ru/i/bdGfYjq7YhhOKA
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_3_practice.pdf
+Видео https://disk.yandex.ru/i/B1Ye_QF1Kvkgyw
+https://disk.yandex.ru/i/uP4sMHXDPkDeiA
+1.4. Массивы Одномерные и многомерные массивы, инициализация, доступ к элементам
+Обработка массивов, поиск минимума/максимума, сортировка пузырьком
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_4_theory.pdf
+Видео https://disk.yandex.ru/i/DBupvTg9VTN73w
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_4_practice.pdf
+Видео https://disk.yandex.ru/i/4awIMxm5ORIixA
+https://disk.yandex.ru/i/R8-2QLnt4_jrSw
+1.5. Функции и их параметры. Рекурсия Объявление и определение функций, параметры по значению/ссылке, возвращаемые значения, рекурсия
+
+Создание библиотеки функций, рекурсивные алгоритмы (факториал, числа Фибоначчи)
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_5_theory.pdf
+Видео  https://disk.yandex.ru/i/IYEliNaS-K02-g
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_5_practice.pdf
+Видео https://disk.yandex.ru/i/k31vKW-W42QmMA 
+https://disk.yandex.ru/i/vU6Dvpmg9k-uSg 
+
+1.6. Модель памяти и хранение данных Стек, куча, статическая память, жизненный цикл переменных.    Указатели. Динамическая память. Строки. Работа с файлами
+Анализ использования памяти, отладка с помощью Valgrind
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_6_theory.pdf
+Видео https://disk.yandex.ru/i/iHhMJGw0bXXLhQ
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_6_practice.pdf
+Видео https://disk.yandex.ru/i/eBlv49J4FqfBrA 
+
+1.7. Область видимости переменных и типы памяти. Пространства имён Локальные/глобальные переменные, static, extern, namespace
+
+Теория https://github.com/softboxdev/cpp_course/blob/main/part_1/theory/razdel_1_7_theory.pdf
+Видео https://disk.yandex.ru/i/IYEliNaS-K02-g
+Практика https://github.com/softboxdev/cpp_course/blob/main/part_1/practice/razdel_1_7_practice.pdf
+Видео : пришлю в следующем письме
+
+Теория (все материалы) https://github.com/softboxdev/cpp_course/tree/main/part_1/theory
+Практика (все материалы) https://github.com/softboxdev/cpp_course/tree/main/part_1/practice
+
+Все Записи: https://disk.yandex.ru/d/s0G0rZWxEUrPYg
